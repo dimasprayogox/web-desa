@@ -26,6 +26,8 @@ class DetailApbdes extends Model
     protected $casts = [
         'anggaran' => 'decimal:2',
         'realisasi' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     /**
@@ -33,6 +35,6 @@ class DetailApbdes extends Model
      */
     public function laporanApbdes(): BelongsTo
     {
-        return $this->belongsTo(LaporanApbdes::class);
+        return $this->belongsTo(LaporanApbdes::class, 'laporan_apbdes_id', 'id');
     }
 }

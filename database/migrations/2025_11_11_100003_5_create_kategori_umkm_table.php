@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id(); // primary key
             $table->string('nama_kategori')->nullable(false);
             $table->text('deskripsi')->nullable();
-            $table->string('icon')->nullable()->comment('Icon class atau URL gambar');
-            $table->boolean('is_active')->default(true);
             $table->timestamps(); // created_at dan updated_at
         });
     }

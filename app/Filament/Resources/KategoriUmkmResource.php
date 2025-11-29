@@ -50,17 +50,8 @@ class KategoriUmkmResource extends Resource
                             ->helperText('Penjelasan tentang jenis usaha yang termasuk dalam kategori ini')
                             ->columnSpanFull(),
 
-                        Forms\Components\TextInput::make('icon')
-                            ->label('Icon/Emoji')
-                            ->maxLength(255)
-                            ->placeholder('🍽️, 🛒, 🔧, 🌾, 👗')
-                            ->helperText('Emoji atau kelas icon yang akan ditampilkan (opsional)'),
-
-                        Forms\Components\Toggle::make('is_active')
-                            ->label('Status Aktif')
-                            ->helperText('Aktifkan kategori ini untuk dapat digunakan')
-                            ->default(true)
-                            ->required(),
+                        
+                        
                     ])
                     ->columns(2),
             ]);
@@ -70,33 +61,23 @@ class KategoriUmkmResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('icon')
-                    ->label('Icon')
-                    ->alignCenter()
-                    ->size('lg')
-                    ->weight('bold'),
-
                 Tables\Columns\TextColumn::make('nama_kategori')
                     ->label('Nama Kategori')
                     ->searchable()
                     ->sortable()
-                    ->weight('medium')
-                    ->description(fn($record) => $record->deskripsi ? Str::limit($record->deskripsi, 50) : null),
+                    ->weight('medium'),
 
+                Tables\Columns\TextColumn::make('deskripsi')
+                    ->label('Deskripsi')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('medium'),
+                    
                 Tables\Columns\TextColumn::make('umkms_count')
                     ->label('Jumlah UMKM')
                     ->counts('umkms')
                     ->badge()
                     ->color('primary')
-                    ->alignCenter(),
-
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label('Status')
-                    ->boolean()
-                    ->trueIcon('heroicon-o-check-circle')
-                    ->falseIcon('heroicon-o-x-circle')
-                    ->trueColor('success')
-                    ->falseColor('danger')
                     ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('created_at')
@@ -112,24 +93,9 @@ class KategoriUmkmResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('nama_kategori', 'asc')
-            ->filters([
-                Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Status')
-                    ->boolean()
-                    ->trueLabel('Aktif')
-                    ->falseLabel('Tidak Aktif')
-                    ->native(false),
-            ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('toggle_status')
-                    ->label(fn($record) => $record->is_active ? 'Nonaktifkan' : 'Aktifkan')
-                    ->icon(fn($record) => $record->is_active ? 'heroicon-o-eye-slash' : 'heroicon-o-eye')
-                    ->color(fn($record) => $record->is_active ? 'warning' : 'success')
-                    ->action(fn($record) => $record->update(['is_active' => !$record->is_active]))
-                    ->requiresConfirmation()
-                    ->modalDescription('Apakah Anda yakin ingin mengubah status kategori ini?'),
                 Tables\Actions\DeleteAction::make()
                     ->before(function ($record, $action) {
                         if ($record->umkms()->count() > 0) {
@@ -144,18 +110,6 @@ class KategoriUmkmResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('activate')
-                        ->label('Aktifkan')
-                        ->icon('heroicon-o-check-circle')
-                        ->color('success')
-                        ->action(fn($records) => $records->each->update(['is_active' => true]))
-                        ->requiresConfirmation(),
-                    Tables\Actions\BulkAction::make('deactivate')
-                        ->label('Nonaktifkan')
-                        ->icon('heroicon-o-x-circle')
-                        ->color('warning')
-                        ->action(fn($records) => $records->each->update(['is_active' => false]))
-                        ->requiresConfirmation(),
                     Tables\Actions\DeleteBulkAction::make()
                         ->before(function ($records, $action) {
                             $hasUmkms = $records->some(fn($record) => $record->umkms()->count() > 0);

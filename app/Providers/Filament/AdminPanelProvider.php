@@ -8,7 +8,6 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
 use App\Filament\Pages\Dashboard as CustomDashboard;
-use App\Filament\Pages\UmkmDashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -33,11 +32,17 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
+            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
+            ->resources([
+                // HANYA register resource yang aktif
+                \App\Filament\Resources\DemografiDusunResource::class,
+                \App\Filament\Resources\UmkmResource::class,
+                \App\Filament\Resources\BeritaResource::class,
+                // ... resource lain yang valid
+            ])
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 CustomDashboard::class,
-                UmkmDashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([

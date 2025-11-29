@@ -25,9 +25,6 @@ class DatabaseSeeder extends Seeder
 
         // Run UMKM related seeders
         $this->call([
-            KategoriUmkmSeeder::class,
-            UmkmSeeder::class,
-            BeritaSeeder::class,
         ]);
     }
 }

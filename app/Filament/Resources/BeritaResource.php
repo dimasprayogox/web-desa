@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\BeritaResource\Pages;
 use App\Models\Berita;
-use App\Services\MediaStorageService;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Filament\Tables;
@@ -46,13 +45,6 @@ class BeritaResource extends Resource
                             ->required()
                             ->placeholder('Pilih kategori berita...')
                             ->helperText('Kategori berita untuk pengelompokan'),
-
-                        Forms\Components\TextInput::make('penulis')
-                            ->label('Penulis')
-                            ->required()
-                            ->maxLength(100)
-                            ->placeholder('Masukkan nama penulis...')
-                            ->helperText('Nama penulis berita (maksimal 100 karakter)'),
                     ])->columns(1),
 
                 Forms\Components\Section::make('Konten Berita')
@@ -65,29 +57,30 @@ class BeritaResource extends Resource
                             ->helperText('Konten lengkap berita')
                             ->columnSpanFull(),
 
-                        Forms\Components\FileUpload::make('gambar_url')
-                            ->label('Gambar Berita')
-                            ->image()
-                            ->directory(config('media.directories.berita', 'berita/images'))
-                            ->disk(app(MediaStorageService::class)->getDiskForStorage())
-                            ->visibility('public')
-                            ->maxSize(config('media.uploads.max_size', 2048))
-                            ->acceptedFileTypes(array_map(
-                                fn($ext) => "image/{$ext}",
-                                config('media.uploads.allowed_extensions', ['jpeg', 'png', 'jpg', 'gif'])
-                            ))
-                            ->imageResizeMode('cover')
-                            ->imageCropAspectRatio('16:9')
-                            ->imageResizeTargetWidth(config('media.uploads.resize_width', 800))
-                            ->imageResizeTargetHeight(config('media.uploads.resize_height', 450))
-                            ->helperText(function () {
-                                $service = app(MediaStorageService::class);
-                                $maxSize = config('media.uploads.max_size', 2048) / 1024;
-                                $formats = implode(', ', config('media.uploads.allowed_extensions', []));
-                                return "Upload gambar untuk berita (maks {$maxSize}MB, format: {$formats}). Storage: {$service->getDriverName()}";
-                            })
-                            ->columnSpanFull(),
-                    ])->columns(1),
+                // Ganti nama field ke 'gambar' agar sesuai model Berita
+                Forms\Components\FileUpload::make('gambar_url')
+                    ->label('Gambar Berita')
+                    ->image()
+                    ->directory(config('media.directories.berita', 'berita'))
+                    ->disk('public') // simpan ke storage/app/public
+                    ->visibility('public')
+                    ->maxSize(config('media.uploads.max_size', 2048))
+                    ->acceptedFileTypes(array_map(
+                        fn($ext) => "image/{$ext}",
+                        config('media.uploads.allowed_extensions', ['jpeg', 'png', 'jpg', 'gif'])
+                    ))
+                    ->imageResizeMode('cover')
+                    ->imageCropAspectRatio('16:9')
+                    ->imageResizeTargetWidth(config('media.uploads.resize_width', 800))
+                    ->imageResizeTargetHeight(config('media.uploads.resize_height', 450))
+                    ->getUploadedFileNameForStorageUsing(fn($file) => time() . '_' . preg_replace('/[^A-Za-z0-9\-\_\.]/', '_', $file->getClientOriginalName()))
+                    ->helperText(function () {
+                        $maxSize = config('media.uploads.max_size', 2048) / 1024;
+                        $formats = implode(', ', config('media.uploads.allowed_extensions', []));
+                        return "Upload gambar untuk berita (maks {$maxSize}MB, format: {$formats}). Storage: lokal (public).";
+                    })
+                    ->columnSpanFull(),
+            ])->columns(1),
             ]);
     }
 
@@ -119,20 +112,46 @@ class BeritaResource extends Resource
                     })
                     ->formatStateUsing(fn(string $state): string => Berita::getKategoriOptions()[$state] ?? $state),
 
-                Tables\Columns\TextColumn::make('penulis')
-                    ->label('Penulis')
-                    ->searchable()
-                    ->sortable(),
+            // ImageColumn menggunakan disk 'public' (lokal)
+            Tables\Columns\ImageColumn::make('gambar_url')
+                ->label('Gambar')
+                ->circular()
+                ->disk('public')
+                ->defaultImageUrl(url('/images/no-image.png'))
+                ->size(40)
+                ->toggleable()
+                ->getStateUsing(function ($record) {
+                    $value = $record->gambar_url ?? null;
 
-                Tables\Columns\ImageColumn::make('gambar_url')
-                    ->label('Gambar')
-                    ->circular()
-                    ->disk(app(MediaStorageService::class)->getDiskForStorage())
-                    ->defaultImageUrl(url('/images/no-image.png'))
-                    ->size(40)
-                    ->toggleable(),
+                    if (empty($value)) return null;
 
-                Tables\Columns\TextColumn::make('isi')
+                    // jika sudah array (cast di model)
+                    if (is_array($value)) {
+                        $first = collect($value)->first();
+                        if (is_string($first)) return $first;
+                        if (is_array($first) && isset($first['path'])) return $first['path'];
+                        if (is_object($first) && isset($first->path)) return $first->path;
+                        return null;
+                    }
+
+                    // jika string: coba decode JSON, kalau bukan JSON anggap path
+                    if (is_string($value)) {
+                        $decoded = json_decode($value, true);
+                        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                            $first = collect($decoded)->first();
+                            if (is_string($first)) return $first;
+                            if (is_array($first) && isset($first['path'])) return $first['path'];
+                            if (is_object($first) && isset($first->path)) return $first->path;
+                        }
+
+                        return $value;
+                    }
+
+                    return null;
+                }),
+
+
+            Tables\Columns\TextColumn::make('isi')
                     ->label('Isi')
                     ->limit(100)
                     ->html()

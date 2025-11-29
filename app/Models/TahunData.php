@@ -2,69 +2,128 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class TahunData extends Model
 {
-    use HasFactory;
+    // Ganti kalau primary key Anda bernama lain (mis: id_tahun)
+    protected $primaryKey = 'id_tahun';
+
+    // Jika primary key bertipe integer autoincrement (default), biarkan true
+    public $incrementing = true;
+
+    // Jika primary key bukan integer, set 'string'
+    protected $keyType = 'int';
 
     protected $table = 'tahun_data';
-    protected $primaryKey = 'id_tahun';
 
     protected $fillable = [
         'tahun',
         'keterangan',
+        'is_active',
     ];
 
     protected $casts = [
+        'is_active' => 'boolean',
         'tahun' => 'integer',
     ];
 
-    // Relasi one-to-many
-    public function demografiPenduduk()
+    protected static function booted()
     {
-        return $this->hasMany(DemografiPenduduk::class, 'tahun_id', 'id_tahun');
+        static::creating(function (TahunData $model) {
+            // Matikan semua aktif sebelumnya
+            DB::table($model->getTable())
+                ->where('is_active', true)
+                ->update(['is_active' => false]);
+
+            // Pastikan model baru aktif
+            $model->is_active = true;
+        });
+
+        static::updating(function (TahunData $model) {
+            if ($model->is_active) {
+                DB::table($model->getTable())
+                    ->where($model->getKeyName(), '!=', $model->getKey())
+                    ->update(['is_active' => false]);
+            }
+        });
     }
 
-    public function umurStatistik()
+    // ========== TAMBAHKAN SCOPE INI ==========
+
+    /**
+     * Scope untuk filter tahun yang aktif
+     */
+    public function scopeActive($query)
     {
-        return $this->hasMany(UmurStatistik::class, 'tahun_id', 'id_tahun');
+        return $query->where('is_active', true);
     }
 
-    public function agamaStatistik()
+    /**
+     * Scope untuk filter tahun yang tidak aktif
+     */
+    public function scopeInactive($query)
     {
-        return $this->hasMany(AgamaStatistik::class, 'tahun_id', 'id_tahun');
+        return $query->where('is_active', false);
     }
 
-    public function pekerjaanStatistik()
+    /**
+     * Scope untuk filter berdasarkan tahun tertentu
+     */
+    public function scopeByYear($query, $year)
     {
-        return $this->hasMany(PekerjaanStatistik::class, 'tahun_id', 'id_tahun');
+        return $query->where('tahun', $year);
     }
 
-    public function pendidikanStatistik()
+    // ========== END SCOPE ==========
+
+    // Relasi — sesuaikan nama FK jika berbeda
+    public function demografiDusun()
     {
-        return $this->hasMany(PendidikanStatistik::class, 'tahun_id', 'id_tahun');
+        return $this->hasMany(\App\Models\DemografiDusun::class, 'tahun_id', $this->getKeyName());
     }
 
-    public function perkawinanStatistik()
-    {
-        return $this->hasMany(PerkawinanStatistik::class, 'tahun_id', 'id_tahun');
-    }
-
-    public function wajibPilihStatistik()
-    {
-        return $this->hasMany(WajibPilihStatistik::class, 'tahun_id', 'id_tahun');
-    }
-
-    public function dusunStatistik()
-    {
-        return $this->hasMany(DusunStatistik::class, 'tahun_id', 'id_tahun');
-    }
-
-    // TAMBAHKAN INI - Relasi ke Laporan APBDes
     public function laporanApbdes()
     {
-        return $this->hasMany(LaporanApbdes::class, 'tahun_id', 'id_tahun');
+        return $this->hasMany(\App\Models\LaporanApbdes::class, 'tahun_id', $this->getKeyName());
+    }
+
+    // ========== HELPER METHODS ==========
+
+    /**
+     * Get tahun aktif saat ini
+     */
+    public static function getActiveTahun()
+    {
+        return static::where('is_active', true)->first();
+    }
+
+    /**
+     * Cek apakah tahun ini aktif
+     */
+    public function isActive(): bool
+    {
+        return $this->is_active === true;
+    }
+
+    /**
+     * Aktifkan tahun ini (dan nonaktifkan yang lain)
+     */
+    public function activate(): bool
+    {
+        DB::table($this->getTable())
+            ->where($this->getKeyName(), '!=', $this->getKey())
+            ->update(['is_active' => false]);
+
+        return $this->update(['is_active' => true]);
+    }
+
+    /**
+     * Nonaktifkan tahun ini
+     */
+    public function deactivate(): bool
+    {
+        return $this->update(['is_active' => false]);
     }
 }

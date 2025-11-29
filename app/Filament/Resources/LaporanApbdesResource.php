@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class LaporanApbdesResource extends Resource
 {
@@ -29,65 +30,79 @@ class LaporanApbdesResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('tahun_id')
-                    ->relationship('tahunData', 'tahun')
-                    ->required()
-                    ->searchable()
-                    ->preload()
-                    ->native(false)
-                    ->label('Tahun')
-                    ->placeholder('Pilih Tahun')
-                    ->helperText('Pilih tahun untuk laporan APBDes'),
+                Forms\Components\Section::make('Informasi Laporan')
+                    ->description('Masukkan informasi dasar laporan APBDes')
+                    ->schema([
+                        Forms\Components\Select::make('tahun_id')
+                            ->relationship('tahunData', 'tahun')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->label('Tahun')
+                            ->placeholder('Pilih Tahun')
+                            ->helperText('Pilih tahun untuk laporan APBDes'),
 
-                Forms\Components\TextInput::make('nama_laporan')
-                    ->required()
-                    ->maxLength(255)
-                    ->label('Nama Laporan')
-                    ->placeholder('Contoh: APBDES 2024')
-                    ->helperText('Nama laporan yang akan ditampilkan'),
+                        Forms\Components\TextInput::make('nama_laporan')
+                            ->required()
+                            ->maxLength(255)
+                            ->label('Nama Laporan')
+                            ->placeholder('Contoh: APBDES 2024')
+                            ->helperText('Nama laporan yang akan ditampilkan'),
 
-                Forms\Components\Select::make('bulan_rilis')
-                    ->required()
-                    ->options([
-                        1 => 'Januari',
-                        2 => 'Februari',
-                        3 => 'Maret',
-                        4 => 'April',
-                        5 => 'Mei',
-                        6 => 'Juni',
-                        7 => 'Juli',
-                        8 => 'Agustus',
-                        9 => 'September',
-                        10 => 'Oktober',
-                        11 => 'November',
-                        12 => 'Desember',
+                        Forms\Components\Select::make('bulan_rilis')
+                            ->required()
+                            ->options([
+                                1 => 'Januari',
+                                2 => 'Februari',
+                                3 => 'Maret',
+                                4 => 'April',
+                                5 => 'Mei',
+                                6 => 'Juni',
+                                7 => 'Juli',
+                                8 => 'Agustus',
+                                9 => 'September',
+                                10 => 'Oktober',
+                                11 => 'November',
+                                12 => 'Desember',
+                            ])
+                            ->native(false)
+                            ->searchable()
+                            ->label('Bulan Rilis')
+                            ->placeholder('Pilih Bulan')
+                            ->helperText('Bulan terbitnya laporan'),
+
+                        Forms\Components\Textarea::make('deskripsi')
+                            ->maxLength(65535)
+                            ->rows(4)
+                            ->columnSpanFull()
+                            ->label('Deskripsi')
+                            ->placeholder('Deskripsi laporan (opsional)')
+                            ->helperText('Keterangan tambahan tentang laporan ini'),
                     ])
-                    ->native(false)
-                    ->searchable()
-                    ->label('Bulan Rilis')
-                    ->placeholder('Pilih Bulan')
-                    ->helperText('Bulan terbitnya laporan'),
+                    ->columns(2)
+                    ->columnSpanFull(),
 
-                Forms\Components\Textarea::make('deskripsi')
-                    ->maxLength(65535)
-                    ->rows(4)
-                    ->columnSpanFull()
-                    ->label('Deskripsi')
-                    ->placeholder('Deskripsi laporan (opsional)')
-                    ->helperText('Keterangan tambahan tentang laporan ini'),
-
-                Forms\Components\Select::make('status')
-                    ->options([
-                        'draft' => 'Draft',
-                        'diterbitkan' => 'Diterbitkan',
+                Forms\Components\Section::make('Preview Detail')
+                    ->description('Jumlah detail yang sudah ditambahkan')
+                    ->schema([
+                        Forms\Components\Placeholder::make('detail_count')
+                            ->label('Jumlah Detail APBDes')
+                            ->content(function ($record) {
+                                if (!$record) return '0 detail';
+                                return $record->detailApbdes()->count() . ' detail';
+                            }),
                     ])
-                    ->default('draft')
-                    ->required()
-                    ->native(false)
-                    ->label('Status')
-                    ->helperText('Status publikasi laporan'),
-            ])
-            ->columns(2);
+                    ->visibleOn('edit')
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    // TAMBAHKAN getEloquentQuery untuk load relasi
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withCount('detailApbdes'); // Load count relasi
     }
 
     public static function table(Table $table): Table
@@ -105,6 +120,7 @@ class LaporanApbdesResource extends Resource
                     ->searchable()
                     ->label('Nama Laporan')
                     ->weight('medium')
+                    ->wrap()
                     ->limit(50),
 
                 Tables\Columns\TextColumn::make('bulan_rilis')
@@ -126,18 +142,21 @@ class LaporanApbdesResource extends Resource
                     ->label('Bulan Rilis')
                     ->icon('heroicon-m-calendar'),
 
-                Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
-                        'warning' => 'draft',
-                        'success' => 'diterbitkan',
-                    ])
-                    ->label('Status'),
-
-                Tables\Columns\TextColumn::make('detailApbdes_count')
-                    ->counts('detailApbdes')
+                // CARA 1: Menggunakan withCount di query (RECOMMENDED)
+                Tables\Columns\TextColumn::make('detail_apbdes_count')
                     ->label('Jumlah Detail')
                     ->badge()
-                    ->color('success'),
+                    ->color(fn($state) => $state > 0 ? 'success' : 'gray')
+                    ->formatStateUsing(fn($state) => $state . ' detail')
+                    ->sortable(),
+
+                // CARA 2: Hitung manual (jika withCount tidak jalan)
+                // Tables\Columns\TextColumn::make('jumlah_detail')
+                //     ->label('Jumlah Detail')
+                //     ->getStateUsing(fn($record) => $record->detailApbdes()->count())
+                //     ->badge()
+                //     ->color(fn($state) => $state > 0 ? 'success' : 'gray')
+                //     ->formatStateUsing(fn($state) => $state . ' detail'),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('d M Y H:i')
@@ -145,30 +164,47 @@ class LaporanApbdesResource extends Resource
                     ->label('Dibuat')
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->label('Diperbarui')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('tahun_id')
-                    ->relationship('tahunData', 'tahun') // UBAH DARI 'tahun_data' KE 'tahunData'
+                    ->relationship('tahunData', 'tahun')
                     ->label('Filter Tahun')
                     ->placeholder('Semua Tahun'),
 
-                Tables\Filters\SelectFilter::make('status')
+                Tables\Filters\SelectFilter::make('bulan_rilis')
                     ->options([
-                        'draft' => 'Draft',
-                        'diterbitkan' => 'Diterbitkan',
+                        1 => 'Januari',
+                        2 => 'Februari',
+                        3 => 'Maret',
+                        4 => 'April',
+                        5 => 'Mei',
+                        6 => 'Juni',
+                        7 => 'Juli',
+                        8 => 'Agustus',
+                        9 => 'September',
+                        10 => 'Oktober',
+                        11 => 'November',
+                        12 => 'Desember',
                     ])
-                    ->label('Filter Status')
-                    ->placeholder('Semua Status'),
+                    ->label('Filter Bulan')
+                    ->placeholder('Semua Bulan'),
+
+                Tables\Filters\Filter::make('has_details')
+                    ->label('Memiliki Detail')
+                    ->query(fn(Builder $query) => $query->has('detailApbdes')),
+
+                Tables\Filters\Filter::make('no_details')
+                    ->label('Belum Ada Detail')
+                    ->query(fn(Builder $query) => $query->doesntHave('detailApbdes')),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label('Lihat'),
+                Tables\Actions\EditAction::make()
+                    ->label('Edit'),
                 Tables\Actions\DeleteAction::make()
+                    ->label('Hapus')
                     ->requiresConfirmation(),
             ])
             ->bulkActions([
@@ -180,14 +216,13 @@ class LaporanApbdesResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->emptyStateHeading('Belum ada laporan APBDes')
             ->emptyStateDescription('Mulai dengan menambahkan laporan APBDes baru.')
-            ->emptyStateIcon('heroicon-o-document-text');
+            ->emptyStateIcon('heroicon-o-document-text')
+            ->striped();
     }
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
@@ -197,5 +232,15 @@ class LaporanApbdesResource extends Resource
             'create' => Pages\CreateLaporanApbdes::route('/create'),
             'edit' => Pages\EditLaporanApbdes::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'APBDes';
     }
 }

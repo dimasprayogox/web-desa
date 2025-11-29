@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
+use Filament\Forms\Components\FileUpload;
 
 class UmkmResource extends Resource
 {
@@ -41,70 +42,36 @@ class UmkmResource extends Resource
                             ->label('Kategori')
                             ->options(KategoriUmkm::all()->pluck('nama_kategori', 'id'))
                             ->required()
-                            ->searchable(),
+                            ->searchable()
+                            ->columnSpan(1),
+
                         Forms\Components\TextInput::make('nama')
                             ->label('Nama UMKM')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(fn(string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
-                        Forms\Components\TextInput::make('slug')
-                            ->required()
-                            ->maxLength(255)
-                            ->unique(Umkm::class, 'slug', ignoreRecord: true),
+                            ->columnSpan(1),
+
                         Forms\Components\Textarea::make('deskripsi')
                             ->label('Deskripsi')
                             ->rows(3)
-                            ->columnSpanFull(),
-                        Forms\Components\TextInput::make('pemilik')
-                            ->label('Nama Pemilik')
-                            ->maxLength(150),
+                            ->columnSpanFull(), // <-- ini bikin dia 1 baris full di bawah
                     ])
-                    ->columns(2),
+                    ->columns(3),
+
 
                 Forms\Components\Section::make('Alamat & Kontak')
                     ->schema([
+                        Forms\Components\TextInput::make('telepon')
+                            ->label('No. Telepon')
+                            ->tel()
+                            ->maxLength(50),
                         Forms\Components\Textarea::make('alamat')
                             ->label('Alamat Lengkap')
                             ->maxLength(500)
                             ->rows(2)
                             ->columnSpanFull(),
-                        Forms\Components\TextInput::make('dusun')
-                            ->label('Dusun')
-                            ->maxLength(150),
-                        Forms\Components\TextInput::make('rt')
-                            ->label('RT')
-                            ->maxLength(50),
-                        Forms\Components\TextInput::make('rw')
-                            ->label('RW')
-                            ->maxLength(50),
-                        Forms\Components\TextInput::make('kecamatan')
-                            ->label('Kecamatan')
-                            ->maxLength(150),
-                        Forms\Components\TextInput::make('kota')
-                            ->label('Kota/Kabupaten')
-                            ->maxLength(150),
-                        Forms\Components\TextInput::make('provinsi')
-                            ->label('Provinsi')
-                            ->maxLength(150),
-                        Forms\Components\TextInput::make('kode_pos')
-                            ->label('Kode Pos')
-                            ->maxLength(20),
-                        Forms\Components\TextInput::make('telepon')
-                            ->label('No. Telepon')
-                            ->tel()
-                            ->maxLength(50),
-                        Forms\Components\TextInput::make('whatsapp')
-                            ->label('WhatsApp')
-                            ->maxLength(50),
-                        Forms\Components\TextInput::make('email')
-                            ->label('Email')
-                            ->email()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('website')
-                            ->label('Website')
-                            ->url()
-                            ->maxLength(255),
+
                     ])
                     ->columns(3),
 
@@ -134,63 +101,23 @@ class UmkmResource extends Resource
                     ])
                     ->columns(3),
 
-                Forms\Components\Section::make('Data Usaha')
-                    ->schema([
-                        Forms\Components\Select::make('jenis_usaha')
-                            ->label('Jenis Usaha')
-                            ->options([
-                                'kuliner' => 'Kuliner',
-                                'perdagangan' => 'Perdagangan',
-                                'jasa' => 'Jasa',
-                                'pertanian' => 'Pertanian',
-                                'fashion' => 'Fashion',
-                                'kerajinan' => 'Kerajinan',
-                                'teknologi' => 'Teknologi',
-                                'lainnya' => 'Lainnya',
-                            ])
-                            ->searchable(),
-                        Forms\Components\Select::make('status_usaha')
-                            ->label('Status Usaha')
-                            ->options([
-                                'aktif' => 'Aktif',
-                                'tidak_aktif' => 'Tidak Aktif',
-                                'tutup_sementara' => 'Tutup Sementara',
-                            ])
-                            ->default('aktif'),
-                        Forms\Components\Select::make('skala_usaha')
-                            ->label('Skala Usaha')
-                            ->options([
-                                'mikro' => 'Mikro',
-                                'kecil' => 'Kecil',
-                                'menengah' => 'Menengah',
-                            ])
-                            ->default('mikro'),
-                        Forms\Components\TextInput::make('omset_per_bulan')
-                            ->label('Omset Per Bulan (Rp)')
-                            ->numeric()
-                            ->prefix('Rp')
-                            ->placeholder('Kosongkan jika tidak diketahui')
-                            ->helperText('Opsional - dapat dikosongkan jika belum diketahui'),
-                        Forms\Components\TextInput::make('jumlah_karyawan')
-                            ->label('Jumlah Karyawan')
-                            ->numeric()
-                            ->minValue(0)
-                            ->placeholder('0 jika tidak ada karyawan'),
-                    ])
-                    ->columns(2),
 
                 Forms\Components\Section::make('Media')
                     ->schema([
-                        Forms\Components\TextInput::make('logo_url')
-                            ->label('URL Logo')
-                            ->url()
-                            ->maxLength(500),
-                        Forms\Components\Textarea::make('foto_galeri')
-                            ->label('Foto Galeri (JSON)')
-                            ->placeholder('["url1", "url2", "url3"]')
-                            ->helperText('Format JSON array untuk multiple foto')
+                        FileUpload::make('foto_galeri')
+                            ->label('Foto Galeri')
+                            ->image()                        // hanya terima gambar
+                            ->multiple()                     // izinkan multiple upload
+                            ->maxFiles(6)                    // batasi jumlah file (ubah sesuai kebutuhan)
+                            ->maxSize(5120)                  // max 5MB per file (KB)
+                            ->directory('umkm_galleries')    // folder penyimpanan di disk public
+                            ->disk('public')                 // pakai disk 'public' (local storage)
+                            ->preserveFilenames(false)       // biarkan Laravel memberi nama unik
+                            ->visibility('public')           // visibility public agar bisa diakses via storage link
+                            ->helperText('Upload beberapa foto galeri. Ukuran maksimal 5MB per file.')
                             ->columnSpanFull(),
                     ]),
+
             ]);
     }
 
@@ -207,58 +134,51 @@ class UmkmResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->weight('medium'),
-                Tables\Columns\TextColumn::make('pemilik')
-                    ->label('Pemilik')
-                    ->searchable()
-                    ->toggleable(),
-                Tables\Columns\TextColumn::make('dusun')
-                    ->label('Dusun')
-                    ->searchable()
-                    ->toggleable(),
-                Tables\Columns\BadgeColumn::make('jenis_usaha')
-                    ->label('Jenis')
-                    ->colors([
-                        'primary' => 'kuliner',
-                        'success' => 'perdagangan',
-                        'warning' => 'jasa',
-                        'info' => 'pertanian',
-                        'danger' => 'fashion',
-                        'secondary' => 'kerajinan',
-                    ]),
-                Tables\Columns\BadgeColumn::make('status_usaha')
-                    ->label('Status')
-                    ->colors([
-                        'success' => 'aktif',
-                        'danger' => 'tidak_aktif',
-                        'warning' => 'tutup_sementara',
-                    ]),
-                Tables\Columns\BadgeColumn::make('skala_usaha')
-                    ->label('Skala')
-                    ->colors([
-                        'primary' => 'mikro',
-                        'success' => 'kecil',
-                        'warning' => 'menengah',
-                    ]),
-                Tables\Columns\TextColumn::make('omset_per_bulan')
-                    ->label('Omset/Bulan')
-                    ->money('IDR')
-                    ->sortable()
-                    ->toggleable()
-                    ->placeholder('Tidak diisi'),
-                Tables\Columns\TextColumn::make('jumlah_karyawan')
-                    ->label('Karyawan')
-                    ->suffix(' orang')
-                    ->sortable()
-                    ->toggleable()
-                    ->placeholder('0'),
+                Tables\Columns\ImageColumn::make('foto_galeri')
+                    ->label('Foto')
+                    ->disk('public')
+                    ->square()
+                    ->size(60)
+                    ->getStateUsing(function ($record) {
+                        $value = $record->foto_galeri;
+
+                        // null atau kosong
+                        if (empty($value)) {
+                            return null;
+                        }
+
+                        // kalau sudah jadi array (karena cast 'array' di model)
+                        if (is_array($value)) {
+                            $first = collect($value)->first();
+                            if (is_array($first) && isset($first['path'])) return $first['path'];
+                            if (is_object($first) && isset($first->path)) return $first->path;
+                            if (is_string($first)) return $first;
+                            return null;
+                        }
+
+                        // kalau masih string (bisa path langsung atau string JSON)
+                        if (is_string($value)) {
+                            $maybe = json_decode($value, true);
+                            if (json_last_error() === JSON_ERROR_NONE && is_array($maybe)) {
+                                $first = collect($maybe)->first();
+                                if (is_array($first) && isset($first['path'])) return $first['path'];
+                                if (is_object($first) && isset($first->path)) return $first->path;
+                                if (is_string($first)) return $first;
+                            }
+
+                            // kalau bukan JSON, anggap dia path langsung
+                            return $value;
+                        }
+
+                        return null;
+                    }),
+
+
                 Tables\Columns\TextColumn::make('telepon')
                     ->label('Telepon')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('email')
-                    ->label('Email')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Terdaftar')
                     ->dateTime()
@@ -269,40 +189,6 @@ class UmkmResource extends Resource
                 Tables\Filters\SelectFilter::make('kategori_id')
                     ->label('Kategori')
                     ->relationship('kategori', 'nama_kategori'),
-                Tables\Filters\SelectFilter::make('jenis_usaha')
-                    ->label('Jenis Usaha')
-                    ->options([
-                        'kuliner' => 'Kuliner',
-                        'perdagangan' => 'Perdagangan',
-                        'jasa' => 'Jasa',
-                        'pertanian' => 'Pertanian',
-                        'fashion' => 'Fashion',
-                        'kerajinan' => 'Kerajinan',
-                        'teknologi' => 'Teknologi',
-                        'lainnya' => 'Lainnya',
-                    ]),
-                Tables\Filters\SelectFilter::make('status_usaha')
-                    ->label('Status')
-                    ->options([
-                        'aktif' => 'Aktif',
-                        'tidak_aktif' => 'Tidak Aktif',
-                        'tutup_sementara' => 'Tutup Sementara',
-                    ]),
-                Tables\Filters\SelectFilter::make('skala_usaha')
-                    ->label('Skala')
-                    ->options([
-                        'mikro' => 'Mikro',
-                        'kecil' => 'Kecil',
-                        'menengah' => 'Menengah',
-                    ]),
-                Tables\Filters\SelectFilter::make('dusun')
-                    ->label('Dusun')
-                    ->options(function () {
-                        return Umkm::whereNotNull('dusun')
-                            ->distinct()
-                            ->pluck('dusun', 'dusun')
-                            ->toArray();
-                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

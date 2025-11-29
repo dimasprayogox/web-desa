@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\DetailApbdes\pages;
+use App\Filament\Resources\DetailApbdes\Pages;
 use App\Models\DetailApbdes;
-use BackedEnum;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -16,69 +15,91 @@ class DetailApbdesResource extends Resource
     protected static ?string $model = DetailApbdes::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-
-    protected static ?string $recordTitleAttribute = 'uraian';
-
     protected static ?string $navigationLabel = 'Detail APBDes';
-
     protected static ?int $navigationSort = 3;
-
     protected static ?string $navigationGroup = 'APBDes';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('laporan_apbdes_id')
-                    ->relationship('laporanApbdes', 'nama_laporan')
-                    ->required()
-                    ->searchable()
-                    ->preload()
-                    ->native(false)
-                    ->label('Laporan APBDes')
-                    ->placeholder('Pilih Laporan')
-                    ->helperText('Pilih laporan APBDes yang akan didetailkan'),
-
-                Forms\Components\Select::make('tipe')
-                    ->options([
-                        'pendapatan' => 'Pendapatan',
-                        'belanja' => 'Belanja',
-                        'pembiayaan' => 'Pembiayaan',
+                Forms\Components\Section::make('Informasi Laporan')
+                   
+                    ->schema([
+                        Forms\Components\Select::make('laporan_apbdes_id')
+                            ->relationship('laporanApbdes', 'nama_laporan')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->label('Laporan APBDes')
+                            ->placeholder('Pilih Laporan')
+                            ->live()
+                            ->afterStateUpdated(
+                                fn($state, Forms\Set $set) =>
+                                $set('tahun_info', \App\Models\LaporanApbdes::find($state)?->tahunData?->tahun ?? '-')
+                            )
+                            ->helperText('Pilih laporan APBDes yang akan didetailkan'),
                     ])
-                    ->required()
-                    ->native(false)
-                    ->searchable()
-                    ->label('Jenis')
-                    ->placeholder('Pilih Jenis')
-                    ->helperText('Jenis detail APBDes'),
+                    ->columns(1)
+                    ->columnSpanFull(),
 
-                Forms\Components\TextInput::make('uraian')
-                    ->required()
-                    ->maxLength(255)
-                    ->columnSpanFull()
-                    ->label('Uraian')
-                    ->placeholder('Contoh: Hasil Usaha Desa')
-                    ->helperText('Deskripsi item anggaran'),
+                Forms\Components\Section::make('Detail APBDes')
+                     ->schema([
+                        Forms\Components\Repeater::make('details')
+                            ->schema([
+                                Forms\Components\Select::make('tipe')
+                                    ->options([
+                                        'pendapatan' => 'Pendapatan',
+                                        'belanja' => 'Belanja',
+                                        'pembiayaan' => 'Pembiayaan',
+                                    ])
+                                    ->required()
+                                    ->native(false)
+                                    ->default('pendapatan')
+                                    ->label('Jenis')
+                                    ->placeholder('Pilih Jenis')
+                                    ->columnSpan(1),
 
-                Forms\Components\TextInput::make('anggaran')
-                    ->required()
-                    ->numeric()
-                    ->prefix('Rp')
-                    ->label('Anggaran')
-                    ->placeholder('0')
-                    ->helperText('Nilai anggaran yang direncanakan')
-                    ->default(0),
+                                Forms\Components\TextInput::make('uraian')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->label('Uraian')
+                                    ->placeholder('Contoh: Hasil Usaha Desa')
+                                    ->columnSpan(1),
 
-                Forms\Components\TextInput::make('realisasi')
-                    ->required()
-                    ->numeric()
-                    ->prefix('Rp')
-                    ->label('Realisasi')
-                    ->placeholder('0')
-                    ->helperText('Nilai realisasi anggaran')
-                    ->default(0),
-            ])
-            ->columns(2);
+                                Forms\Components\TextInput::make('anggaran')
+                                    ->required()
+                                    ->numeric()
+                                    ->prefix('Rp')
+                                    ->label('Anggaran')
+                                    ->placeholder('0')
+                                    ->default(0)
+                                    ->columnSpan(1),
+
+                                Forms\Components\TextInput::make('realisasi')
+                                    ->required()
+                                    ->numeric()
+                                    ->prefix('Rp')
+                                    ->label('Realisasi')
+                                    ->placeholder('0')
+                                    ->default(0)
+                                    ->columnSpan(1),
+                            ])
+                            ->columns(2)
+                            ->defaultItems(1)
+                            ->addActionLabel('Tambah Detail')
+                            ->reorderable(true)
+                            ->collapsible()
+                            ->itemLabel(fn(array $state): ?string => $state['uraian'] ?? 'Detail Baru')
+                            ->deleteAction(
+                                fn(Forms\Components\Actions\Action $action) => $action
+                                    ->requiresConfirmation()
+                            )
+                            ->columnSpanFull(),
+                    ])
+                    ->columnSpanFull(),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -150,17 +171,7 @@ class DetailApbdesResource extends Resource
                     ->label('% Realisasi')
                     ->alignEnd(),
 
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->label('Dibuat')
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->label('Diperbarui')
-                    ->toggleable(isToggledHiddenByDefault: true),
+               
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('laporan_apbdes_id')
@@ -180,7 +191,6 @@ class DetailApbdesResource extends Resource
                     ->placeholder('Semua Jenis'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
                     ->requiresConfirmation(),
@@ -193,24 +203,22 @@ class DetailApbdesResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->emptyStateHeading('Belum ada detail APBDes')
-            ->emptyStateDescription('Tambahkan detail APBDes dari menu Laporan APBDes.')
+            ->emptyStateDescription('Klik tombol "Tambah Detail APBDes" untuk menambahkan detail baru.')
             ->emptyStateIcon('heroicon-o-document-text')
             ->striped();
     }
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => pages\ListDetailApbdes::route('/'),
-            'create' => pages\CreateDetailApbdes::route('/create'),
-            'edit' => pages\EditDetailApbdes::route('/{record}/edit'),
+            'index' => Pages\ListDetailApbdes::route('/'),
+            'create' => Pages\CreateDetailApbdes::route('/create'),
+            'edit' => Pages\EditDetailApbdes::route('/{record}/edit'),
         ];
     }
 

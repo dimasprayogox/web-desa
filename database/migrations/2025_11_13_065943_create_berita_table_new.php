@@ -17,7 +17,6 @@ return new class extends Migration
             $table->text('isi');
             $table->string('gambar_url', 225)->nullable();
             $table->enum('kategori', ['umum', 'pengumuman', 'kegiatan']);
-            $table->string('penulis', 100);
             $table->timestamp('created_at')->nullable();
             $table->timestamp('updated_at')->nullable();
         });
