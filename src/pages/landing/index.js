@@ -1,6 +1,7 @@
 export * from "./Navbar";
 export * from "./HeroSection";
 export * from "./AboutSection"; 
+export * from "./VisiMisiSection";
 export * from "./ServicesSection";
 export * from "./NewsSection";
 export * from "./ContactSection";

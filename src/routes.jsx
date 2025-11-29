@@ -5,6 +5,7 @@ import {
   InformationCircleIcon,
   PowerIcon,
   ArrowRightOnRectangleIcon,
+  ChartBarIcon,
 } from "@heroicons/react/24/solid";
 import { Dashboard, Profile, Tables, Notifications } from "@/pages/admin";
 import { Login, LogoutPage } from "@/pages/auth";
@@ -15,50 +16,34 @@ const icon = {
 
 export const routes = [
   {
-    layout: "admin",
+    title: "Public Pages",
+    layout: "public",
     pages: [
       {
         icon: <HomeIcon {...icon} />,
-        name: "dashboard",
-        path: "/dashboard",
-        element: <Dashboard />,
+        name: "Home",
+        path: "/",
       },
       {
-        icon: <UserCircleIcon {...icon} />,
-        name: "users",
-        path: "/users",
-        element: <Profile />,
+        icon: <ChartBarIcon {...icon} />,
+        name: "Infografis",
+        path: "/infografis",
       },
-      {
-        icon: <TableCellsIcon {...icon} />,
-        name: "tables",
-        path: "/tables",
-        element: <Tables />,
-      },
-      {
-        icon: <InformationCircleIcon {...icon} />,
-        name: "notifications",
-        path: "/notifications",
-        element: <Notifications />,
-      },
+  
     ],
   },
   {
-    title: "auth pages",
+    title: "Admin Pages",
+    layout: "admin",
+    pages: [
+      // ... admin routes (komen dulu kalau belum dipakai)
+    ],
+  },
+  {
+    title: "Auth Pages",
     layout: "auth",
     pages: [
-      {
-        icon: <ArrowRightOnRectangleIcon {...icon} />,
-        name: "Login",
-        path: "/login",
-        element: <Login />,
-      },
-      {
-        icon: <PowerIcon {...icon} />,
-        name: "Logout",
-        path: "/logout",
-        element: <LogoutPage />,
-      },
+      // ... auth routes (komen dulu kalau belum dipakai)
     ],
   },
 ];

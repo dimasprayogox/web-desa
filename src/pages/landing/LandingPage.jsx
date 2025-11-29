@@ -1,6 +1,7 @@
 import { Navbar } from "./Navbar";
 import { HeroSection } from "./HeroSection";
 import { AboutSection } from "./AboutSection";
+import { VisiMisiSection } from "./VisiMisiSection";
 import { ServicesSection } from "./ServicesSection";
 import { NewsSection } from "./NewsSection";
 import { ContactSection } from "./ContactSection";
@@ -12,6 +13,7 @@ export function LandingPage() {
       <Navbar />
       <HeroSection />
       <AboutSection />
+      <VisiMisiSection />
       <ServicesSection />
       <NewsSection />
       <ContactSection />

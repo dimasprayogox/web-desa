@@ -31,8 +31,8 @@ export function ContactSection() {
                       Alamat
                     </Typography>
                     <Typography className="text-gray-600">
-                      Dusun Krebet, Kecamatan Pajangan<br />
-                      Kabupaten Bantul, Yogyakarta 55751
+                      Desa Krebet, Kecamatan Pilangkenceng<br />
+                      Kabupaten Madiun, Jawa Timur 63154
                     </Typography>
                   </div>
                 </div>
@@ -83,7 +83,7 @@ export function ContactSection() {
             <Card className="h-full">
               <CardBody className="p-0">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3953.123!2d110.3456!3d-7.8901!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zN8KwNTMnMjQuNCJTIDExMMKwMjAnNDQuMiJF!5e0!3m2!1sen!2sid!4v1234567890"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d24106.151777362906!2d111.60875526505356!3d-7.478355971053193!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e79c5d0659c569b%3A0x21cf7e884e14fb88!2sKrebet%2C%20Kec.%20Pilangkenceng%2C%20Kabupaten%20Madiun%2C%20Jawa%20Timur!5e1!3m2!1sid!2sid!4v1764337679159!5m2!1sid!2sid" 
                   width="100%"
                   height="100%"
                   style={{ border: 0, minHeight: "450px" }}
