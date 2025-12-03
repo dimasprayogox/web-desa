@@ -21,7 +21,7 @@ class BeritaResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Berita';
 
-    protected static ?string $navigationGroup = 'Content Management';
+    protected static ?string $navigationGroup = 'manajemen berita';
 
     protected static ?int $navigationSort = 1;
 

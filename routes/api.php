@@ -2,15 +2,13 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\TahunDataController;
-use App\Http\Controllers\Api\UmkmController;
-use App\Http\Controllers\Api\KategoriUmkmController;
 use App\Http\Controllers\Api\BeritaController;
+use App\Http\Controllers\Api\UmkmController;
 use App\Http\Controllers\Api\StrukturOrganisasiController;
+use App\Http\Controllers\Api\TahunDataController;
 use App\Http\Controllers\Api\DemografiDetailController;
-use App\Http\Controllers\Api\PpidDokumenController;
-use App\Http\Controllers\Api\LaporanApbdesController;
 use App\Http\Controllers\Api\DetailApbdesController;
+use App\Http\Controllers\Api\LaporanApbdesController; // ✅ Import
 
 /*
 |--------------------------------------------------------------------------
@@ -24,87 +22,49 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 /*
 |--------------------------------------------------------------------------
-| TAHUN DATA API ROUTES
+| BERITA ROUTES
 |--------------------------------------------------------------------------
 */
-Route::prefix('tahun-data')->name('api.tahun.')->group(function () {
-    Route::get('/', [TahunDataController::class, 'index'])->name('index');
-    Route::get('/available-years', [TahunDataController::class, 'availableYears'])->name('years');
-    Route::get('/{tahun}', [TahunDataController::class, 'show'])->name('show');
+Route::prefix('berita')->name('api.berita.')->group(function () {
+    // List berita
+    Route::get('/', [BeritaController::class, 'index'])->name('index');
+
+    // Detail berita
+    Route::get('/{id}', [BeritaController::class, 'show'])->name('show');
+    Route::get('/slug/{slug}', [BeritaController::class, 'getBySlug'])->name('slug');
+
+    // ❌ HAPUS route increment view
+    // Route::post('/{id}/view', [BeritaController::class, 'incrementView'])->name('view');
+
+    // Filter & Search
+    Route::get('/kategori/{kategori}', [BeritaController::class, 'kategori'])->name('kategori');
+    Route::get('/arsip/{tahun}/{bulan?}', [BeritaController::class, 'arsip'])->name('arsip');
+    Route::get('/search', [BeritaController::class, 'searchAjax'])->name('search');
+
+    // Widgets
+    Route::get('/terbaru/{limit?}', [BeritaController::class, 'terbaru'])->name('terbaru');
+    Route::get('/populer/{limit?}', [BeritaController::class, 'populer'])->name('populer');
+    Route::get('/widget', [BeritaController::class, 'widget'])->name('widget');
 });
 
-// User authentication route (default Laravel)
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
-// Demografi Detail API Routes
-Route::prefix('demografi-detail')->group(function () {
-
-    // Public routes (tanpa auth)
-    Route::get('/', [DemografiDetailController::class, 'index']);
-    Route::get('/statistics/summary', [DemografiDetailController::class, 'summary']);
-    Route::get('/by-dusun/{dusun_id}', [DemografiDetailController::class, 'byDusun']);
-    Route::get('/by-tahun/{tahun}', [DemografiDetailController::class, 'byTahun']);
-    Route::get('/piramida', [DemografiDetailController::class, 'piramida']);
-    Route::get('/{id}', [DemografiDetailController::class, 'show']);
-
-    // Protected routes (dengan auth) - uncomment jika perlu
-    // Route::middleware('auth:sanctum')->group(function () {
-    //     Route::post('/', [DemografiDetailController::class, 'store']);
-    //     Route::put('/{id}', [DemografiDetailController::class, 'update']);
-    //     Route::delete('/{id}', [DemografiDetailController::class, 'destroy']);
-    // });
-});
-
-// ==================== LAPORAN APBDES API ====================
-Route::prefix('laporan-apbdes')->group(function () {
-    Route::get('/', [LaporanApbdesController::class, 'index']);
-    Route::get('/statistics/summary', [LaporanApbdesController::class, 'summary']);
-    Route::get('/by-tahun/{tahun}', [LaporanApbdesController::class, 'byTahun']);
-    Route::get('/{id}', [LaporanApbdesController::class, 'show']);
-});
-
-// ==================== DETAIL APBDES API ====================
-Route::prefix('detail-apbdes')->group(function () {
-    Route::get('/', [DetailApbdesController::class, 'index']);
-    Route::get('/by-laporan/{laporan_id}', [DetailApbdesController::class, 'byLaporan']);
-    Route::get('/by-tipe/{tipe}', [DetailApbdesController::class, 'byTipe']);
-    Route::get('/{id}', [DetailApbdesController::class, 'show']);
-});
-
-// ==================== UMKM API ====================
-Route::prefix('umkm')->group(function () {
-    Route::get('/', [UmkmController::class, 'index']);
-    Route::get('/statistics/summary', [UmkmController::class, 'summary']);
-    Route::get('/featured', [UmkmController::class, 'featured']);
-    Route::get('/search', [UmkmController::class, 'search']);
-    Route::get('/by-kategori/{kategori_id}', [UmkmController::class, 'byKategori']);
-    Route::get('/by-dusun/{dusun}', [UmkmController::class, 'byDusun']);
-    Route::get('/{id}', [UmkmController::class, 'show']);
-});
-
-// ==================== KATEGORI UMKM API ====================
-Route::prefix('kategori-umkm')->group(function () {
-    Route::get('/', [KategoriUmkmController::class, 'index']);
-    Route::get('/{id}', [KategoriUmkmController::class, 'show']);
-});
-
-// ==================== BERITA API ====================
-Route::prefix('berita')->group(function () {
-    Route::get('/', [BeritaController::class, 'index']);
-    Route::get('/statistics/summary', [BeritaController::class, 'summary']);
-    Route::get('/latest', [BeritaController::class, 'latest']);
-    Route::get('/popular', [BeritaController::class, 'popular']);
-    Route::get('/search', [BeritaController::class, 'search']);
-    Route::get('/kategori', [BeritaController::class, 'kategori']);
-    Route::get('/by-kategori/{kategori}', [BeritaController::class, 'byKategori']);
-    Route::get('/{id}/related', [BeritaController::class, 'related']);
-    Route::get('/{identifier}', [BeritaController::class, 'show']); // ID or slug
-});
 /*
 |--------------------------------------------------------------------------
-| STRUKTUR ORGANISASI API ROUTES
+| UMKM ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::prefix('umkm')->name('api.umkm.')->group(function () {
+    Route::get('/', [UmkmController::class, 'index'])->name('index');
+    Route::get('/slug/{slug}', [UmkmController::class, 'getBySlug'])->name('slug');
+    Route::get('/{id}', [UmkmController::class, 'show'])->name('show');
+    Route::get('/by-kategori/{kategori_id}', [UmkmController::class, 'byKategori'])->name('by-kategori');
+    Route::get('/featured', [UmkmController::class, 'featured'])->name('featured');
+    Route::get('/statistics/summary', [UmkmController::class, 'summary'])->name('summary');
+    Route::get('/search', [UmkmController::class, 'search'])->name('search');
+});
+
+/*
+|--------------------------------------------------------------------------
+| STRUKTUR ORGANISASI ROUTES
 |--------------------------------------------------------------------------
 */
 Route::prefix('struktur-organisasi')->name('api.struktur.')->group(function () {
@@ -132,36 +92,59 @@ Route::prefix('struktur-organisasi')->name('api.struktur.')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| PPID DOKUMEN API ROUTES
+| TAHUN DATA ROUTES
 |--------------------------------------------------------------------------
 */
-Route::prefix('ppid-dokumen')->name('api.ppid.')->group(function () {
-    // Statistics & Info
-    Route::get('/statistics', [PpidDokumenController::class, 'statistics'])->name('statistics');
-    Route::get('/categories', [PpidDokumenController::class, 'categories'])->name('categories');
-    Route::get('/years', [PpidDokumenController::class, 'years'])->name('years');
+Route::prefix('tahun-data')->name('api.tahun-data.')->group(function () {
+    Route::get('/', [TahunDataController::class, 'index'])->name('index');
+    Route::get('/{tahun}', [TahunDataController::class, 'show'])->name('show');
+});
 
-    // Charts
-    Route::get('/chart/kategori', [PpidDokumenController::class, 'chartByKategori'])->name('chart.kategori');
-    Route::get('/chart/tahun/{limit?}', [PpidDokumenController::class, 'chartByTahun'])->name('chart.tahun');
+/*
+|--------------------------------------------------------------------------
+| ✅ DEMOGRAFI DETAIL ROUTES (Sesuai dengan DemografiDetailController)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('demografi-detail')->name('api.demografi-detail.')->group(function () {
+    // List & detail
+    Route::get('/', [DemografiDetailController::class, 'index'])->name('index');
+    Route::get('/{id}', [DemografiDetailController::class, 'show'])->name('show');
 
-    // Latest
-    Route::get('/latest/{limit?}', [PpidDokumenController::class, 'latest'])->name('latest');
+    // Statistics & Summary
+    Route::get('/statistics/summary', [DemografiDetailController::class, 'summary'])->name('summary');
+    Route::get('/piramida', [DemografiDetailController::class, 'piramida'])->name('piramida');
 
-    // By Kategori Khusus
-    Route::get('/berkala', [PpidDokumenController::class, 'berkala'])->name('berkala');
-    Route::get('/serta-merta', [PpidDokumenController::class, 'sertaMerta'])->name('serta-merta');
-    Route::get('/setiap-saat', [PpidDokumenController::class, 'setiapSaat'])->name('setiap-saat');
+    // Filter by dusun & tahun
+    Route::get('/by-dusun/{dusun_id}', [DemografiDetailController::class, 'byDusun'])->name('by-dusun');
+    Route::get('/by-tahun/{tahun}', [DemografiDetailController::class, 'byTahun'])->name('by-tahun');
+});
 
-    // Search & Filter
-    Route::get('/search', [PpidDokumenController::class, 'search'])->name('search');
-    Route::get('/kategori/{kategori}', [PpidDokumenController::class, 'byKategori'])->name('kategori');
-    Route::get('/tahun/{tahun}', [PpidDokumenController::class, 'byTahun'])->name('tahun');
+/*
+|--------------------------------------------------------------------------
+| ✅ DETAIL APBDES ROUTES (Sesuai dengan DetailApbdesController)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('detail-apbdes')->name('api.detail-apbdes.')->group(function () {
+    // Filter routes (harus di atas /{id})
+    Route::get('/by-laporan/{laporan_id}', [DetailApbdesController::class, 'byLaporan'])->name('by-laporan');
+    Route::get('/by-tipe/{tipe}', [DetailApbdesController::class, 'byTipe'])->name('by-tipe');
 
-    // Download
-    Route::get('/{id}/download', [PpidDokumenController::class, 'download'])->name('download');
+    // List & Detail
+    Route::get('/', [DetailApbdesController::class, 'index'])->name('index');
+    Route::get('/{id}', [DetailApbdesController::class, 'show'])->name('show');
+});
 
-    // List & Detail (taruh paling bawah)
-    Route::get('/', [PpidDokumenController::class, 'index'])->name('index');
-    Route::get('/{id}', [PpidDokumenController::class, 'show'])->name('show');
+/*
+|--------------------------------------------------------------------------
+| ✅ LAPORAN APBDES ROUTES (TAMBAHKAN INI)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('laporan-apbdes')->name('api.laporan-apbdes.')->group(function () {
+    // Statistics & Summary (harus di atas /{id})
+    Route::get('/statistics/summary', [LaporanApbdesController::class, 'summary'])->name('summary');
+    Route::get('/by-tahun/{tahun}', [LaporanApbdesController::class, 'byTahun'])->name('by-tahun');
+
+    // List & Detail
+    Route::get('/', [LaporanApbdesController::class, 'index'])->name('index');
+    Route::get('/{id}', [LaporanApbdesController::class, 'show'])->name('show');
 });

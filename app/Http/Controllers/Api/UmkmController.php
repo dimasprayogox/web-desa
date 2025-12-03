@@ -26,14 +26,18 @@ class UmkmController extends Controller
                 $query->where('kategori_id', $request->kategori_id);
             }
 
-            // Search by nama, pemilik, atau deskripsi
+            // ✅ FIX: Search - hapus kolom 'pemilik' jika tidak ada
             if ($request->has('search')) {
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('nama', 'like', "%{$search}%")
-                        ->orWhere('pemilik', 'like', "%{$search}%")
                         ->orWhere('deskripsi', 'like', "%{$search}%")
                         ->orWhere('alamat', 'like', "%{$search}%");
+
+                    // ✅ Only search 'pemilik' if column exists
+                    if (\Schema::hasColumn('umkms', 'pemilik')) {
+                        $q->orWhere('pemilik', 'like', "%{$search}%");
+                    }
                 });
             }
 
@@ -277,9 +281,13 @@ class UmkmController extends Controller
             $data = Umkm::with(['kategori'])
                 ->where(function ($query) use ($keyword) {
                     $query->where('nama', 'like', "%{$keyword}%")
-                        ->orWhere('pemilik', 'like', "%{$keyword}%")
                         ->orWhere('deskripsi', 'like', "%{$keyword}%")
                         ->orWhere('alamat', 'like', "%{$keyword}%");
+
+                    // ✅ Only search 'pemilik' if column exists
+                    if (\Schema::hasColumn('umkms', 'pemilik')) {
+                        $query->orWhere('pemilik', 'like', "%{$keyword}%");
+                    }
                 })
                 ->orderBy('nama', 'asc')
                 ->get();
@@ -322,13 +330,13 @@ class UmkmController extends Controller
         $baseData = [
             'id' => $item->id,
             'nama' => $item->nama,
-            'slug' => $item->slug,
+            'slug' => \Illuminate\Support\Str::slug($item->nama) . '-' . $item->id,
             'kategori' => [
                 'id' => $item->kategori->id ?? null,
                 'nama' => $item->kategori->nama_kategori ?? null,
                 'icon' => $item->kategori->icon ?? null,
             ],
-            'pemilik' => $item->pemilik,
+            'pemilik' => $item->pemilik ?? null,
             'deskripsi' => $item->deskripsi,
             'telepon' => $item->telepon,
             'alamat' => $item->alamat,
@@ -337,7 +345,7 @@ class UmkmController extends Controller
         ];
 
         if ($detailed) {
-            $baseData['foto_galeri'] = $this->getFotoGaleri($item);
+            $baseData['foto_galeri'] = $this->getFotoGaleriUrls($item);
             $baseData['sosial_media'] = [
                 'facebook' => $item->sosial_facebook,
                 'instagram' => $item->sosial_instagram,
@@ -348,7 +356,12 @@ class UmkmController extends Controller
                 'tokopedia' => $item->tokopedia_url,
                 'tiktok_shop' => $item->tiktokshop_url,
             ];
+            $baseData['email'] = $item->email ?? null;
+            $baseData['website'] = $item->website ?? null;
+            $baseData['jam_buka'] = $item->jam_buka ?? null;
+            $baseData['produk'] = $item->produk ? (is_array($item->produk) ? $item->produk : explode(',', $item->produk)) : [];
             $baseData['created_at'] = $item->created_at?->toIso8601String();
+            $baseData['created_at_human'] = $item->created_at?->diffForHumans();
             $baseData['updated_at'] = $item->updated_at?->toIso8601String();
         }
 
@@ -376,7 +389,29 @@ class UmkmController extends Controller
     }
 
     /**
-     * Helper: Get all foto galeri
+     * ✅ TAMBAH METHOD BARU - Get foto galeri as array of URLs
+     */
+    private function getFotoGaleriUrls($item): array
+    {
+        if (!is_array($item->foto_galeri) || empty($item->foto_galeri)) {
+            return [];
+        }
+
+        $urls = [];
+
+        foreach ($item->foto_galeri as $foto) {
+            if (is_string($foto)) {
+                $urls[] = Storage::disk('public')->url($foto);
+            } elseif (is_array($foto) && isset($foto['path'])) {
+                $urls[] = Storage::disk('public')->url($foto['path']);
+            }
+        }
+
+        return $urls;
+    }
+
+    /**
+     * Helper: Get all foto galeri (untuk list view - dengan detail path)
      */
     private function getFotoGaleri($item): array
     {

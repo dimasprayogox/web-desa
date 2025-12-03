@@ -75,32 +75,6 @@ class UmkmResource extends Resource
                     ])
                     ->columns(3),
 
-                Forms\Components\Section::make('Media Sosial & Marketplace')
-                    ->schema([
-                        Forms\Components\TextInput::make('sosial_facebook')
-                            ->label('Facebook')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('sosial_instagram')
-                            ->label('Instagram')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('sosial_tiktok')
-                            ->label('TikTok')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('shopee_url')
-                            ->label('Shopee')
-                            ->url()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('tokopedia_url')
-                            ->label('Tokopedia')
-                            ->url()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('tiktokshop_url')
-                            ->label('TikTok Shop')
-                            ->url()
-                            ->maxLength(255),
-                    ])
-                    ->columns(3),
-
 
                 Forms\Components\Section::make('Media')
                     ->schema([

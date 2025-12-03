@@ -126,7 +126,7 @@ class TahunDataResource extends Resource
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('demografi_count')
-                    ->label('Data Demografi')
+                    ->label('Data Dusun')
                     ->getStateUsing(function ($record): string {
                         $count = $record->demografiDusun()->count();
                         return $count . ' dusun';
@@ -359,7 +359,7 @@ class TahunDataResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Master Data';
+        return 'Data Tahun';
     }
 
     public static function canDelete(\Illuminate\Database\Eloquent\Model $record): bool
