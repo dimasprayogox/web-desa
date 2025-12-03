@@ -77,7 +77,7 @@ export const demografiService = {
   calculateFromUsia: (usia) => {
     if (!usia || typeof usia !== 'object') {
       return { total: 0, laki_laki: 0, perempuan: 0 };
-    }
+    } 
 
     let totalLakiLaki = 0;
     let totalPerempuan = 0;

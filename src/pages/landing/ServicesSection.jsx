@@ -186,10 +186,10 @@ export function ServicesSection() {
   };
 
   return (
-    <section id="services" className="py-20 bg-gradient-to-b from-white to-gray-50">
+    <section id="services" className="py-20 bg-gradient-to-b  from-[#e3f8df] to-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <Typography variant="h2" className="text-3xl lg:text-5xl font-bold text-blue-gray-900 mb-4">
+          <Typography variant="h2" className="text-3xl lg:text-5xl font-bold text-[#104911] mb-4">
             Layanan Desa
           </Typography>
           <Typography variant="lead" className="text-gray-600 max-w-3xl mx-auto">
@@ -218,10 +218,10 @@ export function ServicesSection() {
                 className="hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group touch-pan-y"
               >
                 <CardBody className="text-center p-6">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#e3f8df] text-[#104911] mb-4 group-hover:bg-[#104911] group-hover:text-white transition-all duration-300">
                     {service.icon}
                   </div>
-                  <Typography variant="h5" className="font-bold text-blue-gray-900 mb-3">
+                  <Typography variant="h5" className="font-bold text-[#104911] mb-3">
                     {service.title}
                   </Typography>
                   <Typography className="text-gray-600 text-sm leading-relaxed">
@@ -240,7 +240,7 @@ export function ServicesSection() {
                   clearInterval(autoRef.current);
                   handlePrev();
                 }}
-                className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-white hover:bg-blue-600 text-blue-600 hover:text-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 z-10 hover:scale-110"
+                className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-white hover:bg-[#104911] text-[#104911] hover:text-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 z-10 hover:scale-110"
                 aria-label="Previous slide"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -253,7 +253,7 @@ export function ServicesSection() {
                   clearInterval(autoRef.current);
                   handleNext();
                 }}
-                className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white hover:bg-blue-600 text-blue-600 hover:text-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 z-10 hover:scale-110"
+                className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white hover:bg-[#104911] text-[#104911] hover:text-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 z-10 hover:scale-110"
                 aria-label="Next slide"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

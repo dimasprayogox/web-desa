@@ -38,14 +38,14 @@ export function AboutSection() {
  
 
   return (
-    <section id="about" className="py-20 bg-gray-50">
+    <section id="about" className="py-20 bg-gradient-to-b from-[#e3f8df] to-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <Typography variant="h2" className="text-3xl lg:text-5xl font-bold text-blue-gray-900 mb-4">
-            Tentang Desa Krebet
+          <Typography variant="h2" className="text-3xl lg:text-5xl font-bold text-[#104911] mb-4">
+            Mengenal Desa Krebet
           </Typography>
           <Typography variant="lead" className="text-gray-600 max-w-3xl mx-auto">
-            Desa Krebet, Pilangkenceng - Madiun: Desa Agraris yang Kaya Akan Potensi Alam dan Budaya
+            Desa Krebet, Pilangkenceng : Desa Agraris yang Kaya Akan Potensi Alam dan Budaya
           </Typography>
         </div>
 
@@ -89,7 +89,7 @@ export function AboutSection() {
 
           {/* Content Section */}
           <div>
-            <Typography variant="h4" className="font-bold text-blue-gray-900 mb-4">
+            <Typography variant="h4" className="font-bold text-[#104911] mb-4">
               Sejarah & Profil Desa
             </Typography>
             <Typography className="text-gray-600 mb-4">
@@ -99,7 +99,7 @@ export function AboutSection() {
             </Typography>
             
 
-            <Typography variant="h5" className="font-bold text-blue-gray-900 mb-3 mt-6">
+            <Typography variant="h5" className="font-bold text-[#104911] mb-3 mt-6">
               Potensi & Keunggulan
             </Typography>
             <ul className="space-y-2">
@@ -122,13 +122,6 @@ export function AboutSection() {
                 <span>
                   <strong>UMKM Lokal:</strong> Pengolahan hasil pertanian dan peternakan 
                   menjadi produk bernilai ekonomi
-                </span>
-              </li>
-              <li className="flex items-start gap-2 text-gray-700">
-                <ChevronRightIcon className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <span>
-                  <strong>Wisata Edukasi:</strong> Potensi wisata edukasi pertanian dan 
-                  kehidupan pedesaan
                 </span>
               </li>
             </ul>

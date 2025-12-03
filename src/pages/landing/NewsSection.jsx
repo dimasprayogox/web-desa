@@ -39,11 +39,11 @@ export function NewsSection() {
   // ✅ Loading State
   if (loading) {
     return (
-      <section id="news" className="py-20 bg-gradient-to-b from-white to-gray-50">
+      <section id="news" className="py-20 bg-gradient-to-b from-white to-[#9cec8c]">
         <div className="container mx-auto px-4">
           {/* Header */}
           <div className="text-center mb-16">
-            <Typography variant="h2" className="text-3xl lg:text-5xl font-bold text-blue-gray-900 mb-4">
+            <Typography variant="h2" className="text-3xl lg:text-5xl font-bold text-[#104911] mb-4">
               Berita & Informasi Desa
             </Typography>
             <Typography variant="lead" className="text-gray-600 max-w-3xl mx-auto">
@@ -77,7 +77,7 @@ export function NewsSection() {
       <section id="news" className="py-20 bg-gradient-to-b from-white to-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <Typography variant="h2" className="text-3xl lg:text-5xl font-bold text-blue-gray-900 mb-4">
+            <Typography variant="h2" className="text-3xl lg:text-5xl font-bold text-[#104911] mb-4">
               Berita & Informasi Desa
             </Typography>
             <Typography variant="lead" className="text-gray-600 max-w-3xl mx-auto">
@@ -112,7 +112,7 @@ export function NewsSection() {
       <section id="news" className="py-20 bg-gradient-to-b from-white to-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <Typography variant="h2" className="text-3xl lg:text-5xl font-bold text-blue-gray-900 mb-4">
+            <Typography variant="h2" className="text-3xl lg:text-5xl font-bold text-[#104911] mb-4">
               Berita & Informasi Desa
             </Typography>
             <Typography variant="lead" className="text-gray-600 max-w-3xl mx-auto">
@@ -137,11 +137,11 @@ export function NewsSection() {
   }
 
   return (
-    <section id="news" className="py-20 bg-gradient-to-b from-white to-gray-50">
+    <section id="news" className="py-20 bg-gradient-to-b from-white to-[#e3f8df]">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16">
-          <Typography variant="h2" className="text-3xl lg:text-5xl font-bold text-blue-gray-900 mb-4">
+          <Typography variant="h2" className="text-3xl lg:text-5xl font-bold text-[#104911] mb-4">
             Berita & Informasi Desa
           </Typography>
           <Typography variant="lead" className="text-gray-600 max-w-3xl mx-auto">
@@ -179,7 +179,7 @@ export function NewsSection() {
                     <div className="absolute top-4 left-4">
                       <Chip
                         value={kategoriLabel}
-                        className="bg-blue-600 text-white font-semibold"
+                        className="bg-green-600 text-white font-semibold"
                         size="sm"
                       />
                     </div>
@@ -217,7 +217,7 @@ export function NewsSection() {
                     {/* Title */}
                     <Typography 
                       variant="h5" 
-                      className="font-bold text-blue-gray-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2"
+                      className="font-bold text-blue-gray-900 mb-3 group-hover:text-green-600 transition-colors line-clamp-2"
                     >
                       {item.judul}
                     </Typography>
@@ -230,7 +230,7 @@ export function NewsSection() {
                     {/* Read More Button */}
                     <Button 
                       variant="text" 
-                      color="blue" 
+                      color="green" 
                       className="flex items-center gap-2 p-0 group-hover:gap-3 transition-all"
                     >
                       Baca Selengkapnya
@@ -247,8 +247,8 @@ export function NewsSection() {
         <div className="text-center">
           <Link to="/berita">
             <Button 
-              size="lg" 
-              color="blue"
+              size="lg"
+              color="green"
               className="flex items-center gap-2 mx-auto shadow-lg hover:shadow-xl transition-all"
             >
               Lihat Berita Lainnya

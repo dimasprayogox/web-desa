@@ -162,12 +162,12 @@ export function BeritaList({ searchQuery, kategoriId }) {
       </div>
       {pagination && (
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 pb-4 border-b border-gray-200">
-          <Typography variant="small" className="text-gray-600 font-medium">
+          <Typography variant="small" className="text-green-600 font-medium">
             Menampilkan {pagination.from || 0} - {pagination.to || 0} dari{" "}
             <span className="font-bold text-green-600">{pagination.total || 0}</span> berita
           </Typography>
           {searchQuery && (
-            <Typography variant="small" className="text-gray-600 italic">
+            <Typography variant="small" className="text-green-600 italic">
               Hasil pencarian: "<span className="font-semibold">{searchQuery}</span>"
             </Typography>
           )}

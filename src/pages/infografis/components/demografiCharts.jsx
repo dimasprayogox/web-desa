@@ -38,13 +38,11 @@ ChartJS.register(
 );
 
 export function DemografiCharts() {
-  // Gunakan useStats untuk summary (SAMA SEPERTI DI HeroSection.jsx)
+  // ✅ Gunakan useStats untuk summary cards (data tahun aktif)
   const { stats, loading: statsLoading, error: statsError } = useStats();
   
-  // Gunakan useDemografi untuk data chart detail
+  // ✅ Gunakan useDemografi untuk data chart detail (TANPA parameter tahun - otomatis pakai tahun aktif)
   const { data, loading: demografiLoading, error: demografiError, refetch } = useDemografi();
-
-  
 
   // Combined loading state
   const loading = statsLoading || demografiLoading;
@@ -55,7 +53,7 @@ export function DemografiCharts() {
     return (
       <div className="p-4 space-y-8 min-h-screen bg-gray-50">
         <div className="text-center py-8">
-          <Typography variant="h5" className="text-gray-600 mb-2">
+          <Typography variant="h4" className="text-gray-600 mb-2">
             Memuat data demografi...
           </Typography>
         </div>
@@ -64,7 +62,7 @@ export function DemografiCharts() {
           {[1, 2, 3, 4].map((i) => (
             <Card key={i} className="animate-pulse">
               <CardBody>
-                <div className="h-8 bg-gray-200 rounded mb-2"></div>
+                <div className="h-10 bg-gray-200 rounded mb-3"></div>
                 <div className="h-4 bg-gray-200 rounded w-3/4"></div>
               </CardBody>
             </Card>
@@ -93,10 +91,10 @@ export function DemografiCharts() {
                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" 
               />
             </svg>
-            <Typography variant="h5" className="text-red-600 font-bold mb-2">
+            <Typography variant="h4" className="text-red-600 font-bold mb-3">
               Gagal Memuat Data
             </Typography>
-            <Typography className="text-red-800 mb-2">
+            <Typography variant="paragraph" className="text-red-800 mb-4">
               {error}
             </Typography>
             <button
@@ -111,16 +109,16 @@ export function DemografiCharts() {
     );
   }
 
-  // 🔍 Check if data exists
+  // Check if data exists
   if (!data) {
     return (
       <div className="p-4 min-h-screen bg-gray-50 flex items-center justify-center">
         <Card className="bg-yellow-50 max-w-md">
           <CardBody className="text-center">
-            <Typography variant="h5" className="text-yellow-600 font-bold mb-2">
+            <Typography variant="h4" className="text-yellow-600 font-bold mb-3">
               Data Tidak Tersedia
             </Typography>
-            <Typography className="text-yellow-800 mb-4">
+            <Typography variant="paragraph" className="text-yellow-800 mb-4">
               Data demografi belum dimuat. Klik tombol di bawah untuk memuat ulang.
             </Typography>
             <button
@@ -157,7 +155,7 @@ export function DemografiCharts() {
         padding: 12,
         titleFont: {
           size: 14,
-          weight: 'bold',
+          weight: '600',
         },
         bodyFont: {
           size: 13,
@@ -172,39 +170,47 @@ export function DemografiCharts() {
   const getAgeCategory = (groupLabel) => {
     if (!groupLabel) return 'Lainnya';
     
-    if (groupLabel.includes('+')) {
-      return 'Lansia';
-    }
-
-    const parts = groupLabel.split('-');
-    const minAge = parseInt(parts[0]);
+    const label = String(groupLabel).toLowerCase();
     
-    if (isNaN(minAge)) return 'Lainnya';
+    if (label === '0_5') return 'Balita';
+    if (label === '6_12') return 'Anak-anak';
+    if (label === '13_17') return 'Remaja';
+    if (label === '18_40') return 'Dewasa';
+    if (label === '41_plus' || label.includes('plus') || label.includes('+')) return 'Lansia';
+    
+    if (label.includes('-')) {
+      const parts = label.split('-');
+      const minAge = parseInt(parts[0]);
+      
+      if (isNaN(minAge)) return 'Lainnya';
 
-    if (minAge <= 4) return 'Balita';
-    if (minAge >= 5 && minAge <= 12) return 'Anak-anak';
-    if (minAge >= 13 && minAge <= 19) return 'Remaja';
-    if (minAge >= 20 && minAge <= 59) return 'Dewasa';
-    if (minAge >= 60) return 'Lansia';
+      if (minAge <= 5) return 'Balita';
+      if (minAge >= 6 && minAge <= 12) return 'Anak-anak';
+      if (minAge >= 13 && minAge <= 17) return 'Remaja';
+      if (minAge >= 18 && minAge <= 40) return 'Dewasa';
+      if (minAge >= 41) return 'Lansia';
+    }
 
     return 'Lainnya';
   };
 
   const aggregatedAgeData = (data?.by_kelompok_umur || []).reduce((acc, item) => {
-    const labelKey = item.kelompok_umur || item['kelompok umur'] || '';
+    const labelKey = item.kelompok_umur || item['kelompok umur'] || item.key || '';
     const category = getAgeCategory(labelKey);
 
     if (!acc[category]) acc[category] = { laki_laki: 0, perempuan: 0 };
 
-    acc[category].laki_laki += Number(item.laki_laki || 0);
-    acc[category].perempuan += Number(item.perempuan || 0);
+    const lakiLaki = Number(item.l || item.laki_laki || item['laki-laki'] || 0);
+    const perempuan = Number(item.p || item.perempuan || 0);
+
+    acc[category].laki_laki += lakiLaki;
+    acc[category].perempuan += perempuan;
 
     return acc;
   }, {});
 
   const ageGroupLabels = ['Balita', 'Anak-anak', 'Remaja', 'Dewasa', 'Lansia'];
 
-  // Aggregated Age Group Chart Data
   const aggregatedAgeChartData = {
     labels: ageGroupLabels,
     datasets: [
@@ -269,7 +275,7 @@ export function DemografiCharts() {
       y: {
         stacked: true,
         grid: { display: false },
-        ticks: { font: { size: 11 }, padding: 6 },
+        ticks: { font: { size: 12 }, padding: 6 },
         categoryPercentage: 1,
         barPercentage: 1,
       },
@@ -283,25 +289,30 @@ export function DemografiCharts() {
       label: 'Jumlah Penduduk',
       data: data?.by_pendidikan?.map(item => item.total) || [],
       backgroundColor: [
-        'rgba(239, 68, 68, 0.8)', 'rgba(249, 115, 22, 0.8)', 'rgba(234, 179, 8, 0.8)',
-        'rgba(34, 197, 94, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(99, 102, 241, 0.8)',
-        'rgba(168, 85, 247, 0.8)', 'rgba(236, 72, 153, 0.8)',
+        'rgba(101, 245, 68, 0.8)',
+        'rgba(83, 218, 60, 0.8)',
+        'rgba(69, 191, 52, 0.8)',
+        'rgba(57, 165, 44, 0.8)',
+        'rgba(46, 140, 37, 0.8)',
+        'rgba(35, 116, 30, 0.8)',
+        'rgba(26, 94, 24, 0.8)',
+        'rgba(16, 73, 17, 0.8)',
       ],
-      borderColor: [
-        'rgba(239, 68, 68, 1)', 'rgba(249, 115, 22, 1)', 'rgba(234, 179, 8, 1)',
-        'rgba(34, 197, 94, 1)', 'rgba(59, 130, 246, 1)', 'rgba(99, 102, 241, 1)',
-        'rgba(168, 85, 247, 1)', 'rgba(236, 72, 153, 1)',
-      ],
-      borderWidth: 2,
-      borderRadius: 8,
     }],
   };
 
   const educationOptions = {
     ...defaultOptions,
     scales: {
-      y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' }, ticks: { font: { size: 11 } } },
-      x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 45, minRotation: 45 } },
+      y: { 
+        beginAtZero: true, 
+        grid: { color: 'rgba(0, 0, 0, 0.05)' }, 
+        ticks: { font: { size: 12 } } 
+      },
+      x: { 
+        grid: { display: false }, 
+        ticks: { font: { size: 11 }, maxRotation: 45, minRotation: 45 } 
+      },
     },
   };
 
@@ -312,10 +323,9 @@ export function DemografiCharts() {
     datasets: [{
       data: dusunData.map(item => item.total),
       backgroundColor: [
-        'rgba(249, 115, 22, 0.8)',
-        'rgba(34, 197, 94, 0.8)',
-        'rgba(59, 130, 246, 0.8)',
-        'rgba(168, 85, 247, 0.8)',
+        'rgba(37, 143, 39, 1)',
+        'rgba(64, 215, 67, 1)',
+        'rgba(75, 255, 78, 1)',
       ],
       borderColor: '#ffffff',
       borderWidth: 3,
@@ -323,7 +333,7 @@ export function DemografiCharts() {
     }],
   };
 
-  // Use stats.penduduk for percentage calculation (SAMA SEPERTI DI HeroSection)
+  // ✅ Gunakan stats.penduduk untuk persentase (SAMA SEPERTI summary cards)
   const dusunPercentages = dusunData.map(item => ({
     dusun: item.dusun,
     percentage: ((item.total / (stats?.penduduk || 1)) * 100).toFixed(1),
@@ -337,10 +347,16 @@ export function DemografiCharts() {
     datasets: [{
       data: topOccupations.map(item => item.total),
       backgroundColor: [
-        'rgba(239, 68, 68, 0.8)', 'rgba(249, 115, 22, 0.8)', 'rgba(234, 179, 8, 0.8)',
-        'rgba(34, 197, 94, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(99, 102, 241, 0.8)',
-        'rgba(168, 85, 247, 0.8)', 'rgba(236, 72, 153, 0.8)', 'rgba(14, 165, 233, 0.8)',
-        'rgba(20, 184, 166, 0.8)',
+        'rgba(101, 245, 68, 0.8)',
+        'rgba(76, 217, 89, 0.8)',
+        'rgba(54, 190, 95, 0.8)',
+        'rgba(42, 168, 100, 0.8)',
+        'rgba(32, 148, 95, 0.8)',
+        'rgba(22, 128, 80, 0.8)',
+        'rgba(16, 110, 70, 0.8)',
+        'rgba(12, 90, 55, 0.8)',
+        'rgba(8, 72, 40, 0.8)',
+        'rgba(4, 52, 26, 0.8)',
       ],
       borderColor: '#ffffff',
       borderWidth: 3,
@@ -364,8 +380,14 @@ export function DemografiCharts() {
     datasets: [{
       data: religionData.map(item => item.total),
       backgroundColor: [
-        'rgba(34, 197, 94, 0.7)', 'rgba(59, 130, 246, 0.7)', 'rgba(168, 85, 247, 0.7)',
-        'rgba(249, 115, 22, 0.7)', 'rgba(234, 179, 8, 0.7)', 'rgba(236, 72, 153, 0.7)',
+        'rgba(101, 245, 68, 0.8)',
+        'rgba(76, 217, 89, 0.8)',
+        'rgba(255, 206, 84, 0.8)',
+        'rgba(255, 159, 64, 0.8)',
+        'rgba(255, 99, 132, 0.8)',
+        'rgba(153, 102, 255, 0.8)',
+        'rgba(75, 192, 192, 0.8)',
+        'rgba(201, 203, 207, 0.8)',
       ],
       borderColor: '#ffffff',
       borderWidth: 2,
@@ -379,8 +401,10 @@ export function DemografiCharts() {
     datasets: [{
       data: marriageData.map(item => item.total),
       backgroundColor: [
-        'rgba(59, 130, 246, 0.8)', 'rgba(34, 197, 94, 0.8)',
-        'rgba(249, 115, 22, 0.8)', 'rgba(239, 68, 68, 0.8)',
+        'rgba(59, 130, 246, 0.8)',
+        'rgba(34, 197, 94, 0.8)',
+        'rgba(249, 115, 22, 0.8)',
+        'rgba(236, 72, 153, 0.8)',
       ],
       borderColor: '#ffffff',
       borderWidth: 3,
@@ -389,17 +413,17 @@ export function DemografiCharts() {
   };
 
   return (
-    <div className="p-4 space-y-8 min-h-screen bg-gray-50 font-sans">
-      {/* Summary Cards - MENGGUNAKAN stats DARI useStats (SAMA SEPERTI HeroSection.jsx) */}
+    <div className="p-4 space-y-8 min-h-screen font-sans">
+      {/* ✅ Summary Cards - Menggunakan stats dari useStats (tahun aktif) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="bg-gradient-to-br from-blue-500 to-blue-600 hover:shadow-xl transition-shadow">
           <CardBody className="text-white">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" className="font-bold mb-1">
+                <Typography variant="h2" className="font-bold mb-2">
                   {statsLoading ? "..." : stats.penduduk.toLocaleString("id-ID")}
                 </Typography>
-                <Typography variant="small" className="opacity-80">
+                <Typography variant="h6" className="opacity-90 font-medium">
                   Total Penduduk
                 </Typography>
               </div>
@@ -412,10 +436,10 @@ export function DemografiCharts() {
           <CardBody className="text-white">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" className="font-bold mb-1">
+                <Typography variant="h2" className="font-bold mb-2">
                   {statsLoading ? "..." : stats.kk.toLocaleString("id-ID")}
                 </Typography>
-                <Typography variant="small" className="opacity-80">
+                <Typography variant="h6" className="opacity-90 font-medium">
                   Kepala Keluarga
                 </Typography>
               </div>
@@ -428,10 +452,10 @@ export function DemografiCharts() {
           <CardBody className="text-white">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" className="font-bold mb-1">
+                <Typography variant="h2" className="font-bold mb-2">
                   {statsLoading ? "..." : stats.laki_laki.toLocaleString("id-ID")}
                 </Typography>
-                <Typography variant="small" className="opacity-80">
+                <Typography variant="h6" className="opacity-90 font-medium">
                   Laki-Laki
                 </Typography>
               </div>
@@ -444,10 +468,10 @@ export function DemografiCharts() {
           <CardBody className="text-white">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" className="font-bold mb-1">
+                <Typography variant="h2" className="font-bold mb-2">
                   {statsLoading ? "..." : stats.perempuan.toLocaleString("id-ID")}
                 </Typography>
-                <Typography variant="small" className="opacity-80">
+                <Typography variant="h6" className="opacity-90 font-medium">
                   Perempuan
                 </Typography>
               </div>
@@ -457,12 +481,12 @@ export function DemografiCharts() {
         </Card>
       </div>
 
-      {/* Age Distribution Chart */}
+      {/* ✅ Age Distribution Chart - Data dari tahun aktif */}
       <Card className="hover:shadow-xl transition-all duration-300 mb-8">
         <CardBody>
-          <div className="flex items-center gap-2 mb-4">
-            <Typography variant="h6" className="font-bold">
-              Distribusi Kelompok Usia 
+          <div className="flex items-center gap-2 mb-6">
+            <Typography variant="h4" className="font-bold text-gray-800">
+              Distribusi Kelompok Usia
             </Typography>
           </div>
           <div className="h-60 flex items-center justify-center">
@@ -471,13 +495,13 @@ export function DemografiCharts() {
         </CardBody>
       </Card>
 
-      {/* Dusun Distribution */}
+      {/* ✅ Dusun Distribution - Data dari tahun aktif */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <Card className="hover:shadow-xl transition-all duration-300">
           <CardBody>
-            <div className="flex items-center gap-2 mb-4">
-              <HomeIcon className="h-5 w-5 text-red-600" /> 
-              <Typography variant="h6" className="font-bold">
+            <div className="flex items-center gap-2 mb-6">
+              <HomeIcon className="h-6 w-6 text-green-600" /> 
+              <Typography variant="h4" className="font-bold text-gray-800">
                 Populasi Berdasarkan Dusun
               </Typography>
             </div>
@@ -489,37 +513,29 @@ export function DemografiCharts() {
 
         <Card className="hover:shadow-xl transition-all duration-300">
           <CardBody>
-            <Typography
-              variant="small"
-              className="uppercase tracking-[0.2em] text-indigo-500 font-semibold mb-1"
-            >
-              Ringkasan Populasi
-            </Typography>
+            <div className="mb-12">
+              <Typography variant="h4" className="font-bold text-gray-800 mb-4">
+                Distribusi Persentase Populasi per Dusun
+              </Typography>
+            </div>
 
-            <Typography
-              variant="h5"
-              className="mb-4 font-extrabold text-slate-800"
-            >
-              Distribusi Persentase Populasi per Dusun
-            </Typography>
-
-            <div className="bg-slate-50 rounded-2xl p-4">
-              <ul className="space-y-2">
+            <div className="bg-slate-50 rounded-2xl p-6">
+              <ul className="space-y-4">
                 {dusunPercentages.map((item, index) => (
-                  <li key={index} className="flex items-baseline gap-2">
-                    <span className="mt-1 h-2 w-2 rounded-full bg-indigo-500 flex-shrink-0" />
-                    <div className="flex flex-col">
-                      <div className="flex flex-wrap items-baseline gap-2">
-                        <span className="text-sm font-semibold text-slate-800">
+                  <li key={index} className="flex items-start gap-3">
+                    <span className="mt-4 h-3 w-3 rounded-full bg-green-500 flex-shrink-0" />
+                    <div className="flex-1">
+                      <div className="flex justify-between items-baseline">
+                        <Typography variant="h4" className="font-semibold text-gray-800">
                           {item.dusun}
-                        </span>
-                        <span className="text-sm font-bold tracking-wide text-indigo-600">
+                        </Typography>
+                        <Typography variant="h4" className="font-semibold text-green-600">
                           {item.percentage}%
-                        </span>
+                        </Typography>
                       </div>
-                      <span className="text-[0.75rem] text-slate-500">
+                      <Typography variant="small" className="text-gray-600">
                         {item.total} jiwa
-                      </span>
+                      </Typography>
                     </div>
                   </li>
                 ))}
@@ -529,12 +545,12 @@ export function DemografiCharts() {
         </Card>
       </div>
 
-      {/* Education Level */}
+      {/* ✅ Education Level - Data dari tahun aktif */}
       <Card className="hover:shadow-xl transition-all duration-300">
         <CardBody>
-          <div className="flex items-center gap-2 mb-4">
-            <AcademicCapIcon className="h-5 w-5 text-green-600" />
-            <Typography variant="h6" className="font-bold">
+          <div className="flex items-center gap-2 mb-6">
+            <AcademicCapIcon className="h-6 w-6 text-green-600" />
+            <Typography variant="h4" className="font-bold text-gray-800">
               Tingkat Pendidikan
             </Typography>
           </div>
@@ -544,13 +560,13 @@ export function DemografiCharts() {
         </CardBody>
       </Card>
 
-      {/* Occupation & Religion */}
+      {/* ✅ Occupation & Religion - Data dari tahun aktif */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="hover:shadow-xl transition-all duration-300">
           <CardBody>
-            <div className="flex items-center gap-2 mb-4">
-              <BriefcaseIcon className="h-5 w-5 text-purple-600" />
-              <Typography variant="h6" className="font-bold">
+            <div className="flex items-center gap-2 mb-6">
+              <BriefcaseIcon className="h-6 w-6 text-green-600" />
+              <Typography variant="h4" className="font-bold text-gray-800">
                 Top 10 Pekerjaan
               </Typography>
             </div>
@@ -562,9 +578,9 @@ export function DemografiCharts() {
 
         <Card className="hover:shadow-xl transition-all duration-300">
           <CardBody>
-            <div className="flex items-center gap-2 mb-4">
-              <BuildingLibraryIcon className="h-5 w-5 text-orange-600" />
-              <Typography variant="h6" className="font-bold">
+            <div className="flex items-center gap-2 mb-6">
+              <BuildingLibraryIcon className="h-6 w-6 text-green-600" />
+              <Typography variant="h4" className="font-bold text-gray-800">
                 Distribusi Agama
               </Typography>
             </div>
@@ -573,21 +589,22 @@ export function DemografiCharts() {
             </div>
           </CardBody>
         </Card>
-
-        <Card className="hover:shadow-xl transition-all duration-300">
-          <CardBody>
-            <div className="flex items-center gap-2 mb-4">
-              <HeartIcon className="h-5 w-5 text-pink-600" />
-              <Typography variant="h6" className="font-bold">
-                Status Perkawinan
-              </Typography>
-            </div>
-            <div className="h-80 flex items-center justify-center">
-              <Pie data={marriageChartData} options={defaultOptions} />
-            </div>
-          </CardBody>
-        </Card>
       </div>
+
+      {/* ✅ Marriage Status - Data dari tahun aktif */}
+      <Card className="hover:shadow-xl transition-all duration-300">
+        <CardBody>
+          <div className="flex items-center gap-2 mb-6">
+            <HeartIcon className="h-6 w-6 text-green-600" />
+            <Typography variant="h4" className="font-bold text-gray-800">
+              Status Perkawinan
+            </Typography>
+          </div>
+          <div className="h-80 flex items-center justify-center">
+            <Pie data={marriageChartData} options={defaultOptions} />
+          </div>
+        </CardBody>
+      </Card>
     </div>
   );
 }

@@ -77,7 +77,7 @@ export const getAllStats = async () => {
     const [umkm, penduduk, kk, rtRw] = await Promise.all([
       getUmkmCount(),
       getPendudukCount(),
-      getKKCount(),
+      getKKCount(), 
       getRtRwCount(),
     ]);
 

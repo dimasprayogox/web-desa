@@ -25,7 +25,7 @@ export function useStats() {
 
         if (demografiRes.success && demografiRes.data) {
           let totalPenduduk = 0;
-          let totalKK = 0;
+          let totalKK = 0; 
           let totalLakiLaki = 0;
           let totalPerempuan = 0;
 

@@ -104,9 +104,9 @@ export function UmkmList({ searchQuery, kategoriId }) {
   // Empty State
   if (!umkm || umkm.length === 0) {
     return (
-      <div className="text-center py-12 bg-gray-100 rounded-lg">
+      <div className="text-center py-12 bg-green-100 rounded-lg">
         <svg
-          className="w-16 h-16 mx-auto mb-4 text-gray-400"
+          className="w-16 h-16 mx-auto mb-4 text-green-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -132,20 +132,6 @@ export function UmkmList({ searchQuery, kategoriId }) {
 
   return (
     <div className="space-y-6">
-      {/* Info Total */}
-      {pagination && (
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 pb-4 border-b border-gray-200">
-          <Typography variant="small" className="text-gray-600 font-medium">
-            Menampilkan {pagination.from || 0} - {pagination.to || 0} dari{" "}
-            <span className="font-bold text-green-600">{pagination.total || 0}</span> UMKM
-          </Typography>
-          {searchQuery && (
-            <Typography variant="small" className="text-gray-600 italic">
-              Hasil pencarian: "<span className="font-semibold">{searchQuery}</span>"
-            </Typography>
-          )}
-        </div>
-      )}
 
       {/* UMKM Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -153,6 +139,20 @@ export function UmkmList({ searchQuery, kategoriId }) {
           <UmkmCard key={item.id} umkm={item} />
         ))}
       </div>
+      {/* Info Total */}
+      {pagination && (
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 pb-4 border-b border-green-200">
+          <Typography variant="small" className="text-green-600 font-medium">
+            Menampilkan {pagination.from || 0} - {pagination.to || 0} dari{" "}
+            <span className="font-bold text-green-600">{pagination.total || 0}</span> UMKM
+          </Typography>
+          {searchQuery && (
+            <Typography variant="small" className="text-green-600 italic">
+              Hasil pencarian: "<span className="font-semibold">{searchQuery}</span>"
+            </Typography>
+          )}
+        </div>
+      )}
 
       {/* Pagination */}
       {pagination && pagination.last_page > 1 && (

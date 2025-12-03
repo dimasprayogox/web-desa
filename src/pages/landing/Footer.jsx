@@ -1,57 +1,82 @@
 import { Typography } from "@material-tailwind/react";
+import { MapPinIcon, PhoneIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
 
 export function Footer() {
-  const navigation = [
-    { name: "Beranda", href: "#home" },
-    { name: "Tentang", href: "#about" },
-    { name: "Layanan", href: "#services" },
-    { name: "Berita", href: "#news" },
-    { name: "Galeri", href: "#gallery" },
-    { name: "Kontak", href: "#contact" },
-  ];
- 
+  const villageInfo = {
+    name: "Desa Krebet",
+    address: "Jl. Raya Krebet, Pilangkenceng, Madiun",
+    phone: "(0351) 123-456",
+    email: "desakrebet@email.com"
+  };
+
   return (
-    <footer className="bg-blue-gray-900 text-white py-12">
+    <footer className="bg-[#104911] text-white py-8">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-3 gap-8 mb-8">
+        
+        {/* Grid 2 kolom, simpel */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+          
+          {/* Identitas Desa */}
           <div>
-            <Typography variant="h5" className="font-bold mb-4">
-              Desa Krebet
+            <Typography variant="h5" className="font-bold mb-2">
+              {villageInfo.name}
             </Typography>
-            <Typography className="text-gray-400">
-              Desa wisata dengan kerajinan batik kayu terbaik di Yogyakarta
+
+            <div className="space-y-2 text-gray-300">
+              <div className="flex items-center gap-2">
+                <MapPinIcon className="w-4 h-4" />
+                <Typography variant="small">
+                  {villageInfo.address}
+                </Typography>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <PhoneIcon className="w-4 h-4" />
+                <Typography variant="small">
+                  {villageInfo.phone}
+                </Typography>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <EnvelopeIcon className="w-4 h-4" />
+                <Typography variant="small">
+                  {villageInfo.email}
+                </Typography>
+              </div>
+            </div>
+          </div>
+
+          {/* Info Singkat */}
+          <div>
+            <Typography variant="h6" className="font-bold mb-3">
+              Tentang Website
+            </Typography>
+
+            <Typography variant="small" className="text-gray-300">
+              Website resmi pelayanan informasi Desa Krebet.
+            </Typography>
+
+            <Typography variant="small" className="text-gray-300 mt-2 block">
+              Update terakhir: {new Date().toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+              })}
             </Typography>
           </div>
-          <div>
-            <Typography variant="h6" className="font-bold mb-4">
-              Link Cepat
-            </Typography>
-            <ul className="space-y-2">
-              {navigation.map((item) => (
-                <li key={item.name}>
-                  <a href={item.href} className="text-gray-400 hover:text-white transition-colors">
-                    {item.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <Typography variant="h6" className="font-bold mb-4">
-              Jam Pelayanan
-            </Typography>
-            <Typography className="text-gray-400">
-              Senin - Jumat: 08.00 - 15.00 WIB<br />
-              Sabtu: 08.00 - 12.00 WIB<br />
-              Minggu & Libur: Tutup
-            </Typography>
-          </div>
+
         </div>
-        <div className="border-t border-gray-700 pt-8 text-center">
-          <Typography className="text-gray-400">
-            © 2025 Desa Krebet. All rights reserved.
+
+        {/* Bottom */}
+        <div className="border-t border-gray-700 pt-4">
+          <Typography
+            variant="small"
+            className="text-gray-400 text-center"
+          >
+            © {new Date().getFullYear()} KKN Kelompok 6 UNIPMA 2025 — Desa Krebet
           </Typography>
         </div>
+
       </div>
     </footer>
   );

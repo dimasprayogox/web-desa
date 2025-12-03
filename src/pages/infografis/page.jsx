@@ -39,9 +39,9 @@ export function InfografisContent() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-[#e3f8df] to-white">
       {/* Hero Section */}
-      <section className=" text-blue-800 py-10">
+      <section className=" text-green-800 py-10 ">
           <div className="px-20 max-w-3xl">
             <Typography variant="h1" className="text-4xl lg:text-5xl font-bold ">
               Infografis Desa Krebet
@@ -58,9 +58,9 @@ export function InfografisContent() {
             <Card className="mb-2">
               <CardBody className="p-0">
                 <TabsHeader
-                  className="bg-transparent"
+                  className="bg-green-50"
                   indicatorProps={{
-                    className: "bg-blue-600 shadow-md",
+                    className: "bg-green-600 shadow-md",
                   }}
                 >
                   {tabs.map(({ label, value, icon: Icon }) => (

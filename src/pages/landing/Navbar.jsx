@@ -19,34 +19,31 @@ export function Navbar() {
   const [openNav, setOpenNav] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const [isScrolling, setIsScrolling] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
   // Effect untuk detect scroll
   useEffect(() => {
     const handleScroll = () => {
-      // Set scrolled state untuk background navbar
       const isScrolled = window.scrollY > 10;
       setScrolled(isScrolled);
-
-      // Update active section berdasarkan scroll position
       updateActiveSection();
     };
 
-    // Intersection Observer untuk detect section yang aktif
     const setupIntersectionObserver = () => {
       const sections = document.querySelectorAll("section[id]");
       
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && !isScrolling) {
               setActiveSection(entry.target.id);
             }
           });
         },
         {
-          rootMargin: "-20% 0px -70% 0px", // Adjust untuk sensitivity
+          rootMargin: "-20% 0px -70% 0px",
           threshold: 0.1,
         }
       );
@@ -65,9 +62,8 @@ export function Navbar() {
       window.removeEventListener("scroll", handleScroll);
       observer.disconnect();
     };
-  }, [location]);
+  }, [location, isScrolling]);
 
-  // Function untuk update active section
   const updateActiveSection = () => {
     const sections = document.querySelectorAll("section[id]");
     let current = "";
@@ -85,7 +81,7 @@ export function Navbar() {
     }
   };
 
-  // Struktur navigasi baru
+  // Struktur navigasi yang diperbarui
   const navLinks = [
     {
       name: "Profil Desa",
@@ -93,8 +89,8 @@ export function Navbar() {
       items: [
         { name: "Beranda", href: "#home", isAnchor: true, id: "home" },
         { name: "Tentang", href: "#about", isAnchor: true, id: "about" },
-        { name: "Visi & Misi", href: "#visi-misi", isAnchor: true, id: "visi-misi" },
-        { name: "Layanan", href: "#services", isAnchor: true, id: "services" },
+        { name: "Visi & Misi", href: "#visi-misi", isAnchor: true, id: "visi-misi"},
+        { name: "Layanan", href: "#services", isAnchor: true, id: "services"},
         { name: "Berita", href: "#news", isAnchor: true, id: "news" },
         { name: "Kontak", href: "#contact", isAnchor: true, id: "contact" },
       ],
@@ -104,108 +100,151 @@ export function Navbar() {
     { name: "UMKM", href: "/umkm", isRoute: true },
   ];
 
-  // Kelas link dengan hover effects yang lebih baik
-  const getLinkClass = (link, isMobile = false) => {
-    const baseClass = isMobile 
-      ? "block py-3 px-4 rounded-lg transition-all duration-300 font-medium w-full text-left border-l-4"
-      : "flex items-center gap-1 transition-all duration-300 font-medium relative";
-
-    const activeClass = isMobile
-      ? "bg-blue-50 text-[#455300] border-[#455300] shadow-sm"
-      : "text-[#455300]";
-
-    const inactiveClass = isMobile
-      ? "text-blue-gray-700 hover:bg-blue-50 hover:text-[#455300] border-transparent hover:border-blue-200 hover:shadow-sm"
-      : "text-blue-gray-700 hover:text-[#455300]";
-
-    // Check if this link is active
-    let isActive = false;
+  // Helper untuk mendapatkan kelas link yang aktif
+  const isLinkActive = (link) => {
     if (link.isAnchor && link.id === activeSection && location.pathname === "/") {
-      isActive = true;
+      return true;
     }
-
-    return `${baseClass} ${isActive ? activeClass : inactiveClass}`;
+    if (link.isRoute && location.pathname === link.href) {
+      return true;
+    }
+    if (link.isDropdown && link.items.some(item => item.id === activeSection && location.pathname === "/")) {
+      return true;
+    }
+    return false;
   };
 
-  // Function untuk smooth scroll ke section dengan easing
+  // Kelas link dengan perbaikan untuk mobile
+  const getLinkClass = (link, isMobile = false) => {
+    const isActive = isLinkActive(link);
+    
+    if (isMobile) {
+      const baseClass = "flex items-center gap-3 py-3 px-4 rounded-lg transition-all duration-300 font-medium w-full text-left";
+      
+      if (isActive) {
+        return `${baseClass} bg-gradient-to-r from-green-50 to-blue-50 text-[#104911] border-l-4 border-[#104911] shadow-sm`;
+      }
+      
+      return `${baseClass} text-[#104911] hover:bg-gray-50 hover:text-[#104911] border-l-4 border-transparent hover:border-gray-200`;
+    }
+
+    // Desktop classes
+    const baseClass = "flex items-center gap-1 transition-all duration-300 font-medium relative px-1";
+    
+    if (isActive) {
+      return `${baseClass} text-[#104911] font-semibold`;
+    }
+    
+    return `${baseClass} text-[#104911] hover:text-[#104911]`;
+  };
+
+  // ✅ IMPROVED - Function untuk smooth scroll dengan easing dan animasi mulus
   const handleScrollToSection = (sectionId) => {
     const id = sectionId.replace("#", "");
 
-    // Jika tidak di landing page, navigate dulu ke landing
     if (location.pathname !== "/") {
-      navigate("/");
-      // Tunggu sebentar agar page ter-render, baru scroll
-      setTimeout(() => {
-        smoothScrollToElement(id);
-      }, 300);
+      navigate("/", { state: { scrollTo: id } });
     } else {
-      // Langsung scroll jika sudah di landing page
       smoothScrollToElement(id);
     }
 
-    // Tutup mobile menu
     setOpenNav(false);
   };
 
-  // Enhanced smooth scroll function dengan easing
+  // ✅ IMPROVED - Smooth scroll dengan custom easing function
   const smoothScrollToElement = (id) => {
     const element = document.getElementById(id);
-    if (element) {
-      const navbarHeight = 64;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+    if (!element) return;
 
-      // Custom easing function untuk animasi yang lebih smooth
-      const easeInOutCubic = (t) => {
-        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      };
+    setIsScrolling(true);
+    setActiveSection(id);
 
-      const startPosition = window.pageYOffset;
-      const distance = offsetPosition - startPosition;
-      const duration = 1000; // 1 second
-      let startTime = null;
+    const navbarHeight = 80; // Height navbar + padding
+    const targetPosition = element.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    const duration = 1200; // Durasi animasi dalam ms (lebih lama = lebih smooth)
+    let start = null;
 
-      const animation = (currentTime) => {
-        if (startTime === null) startTime = currentTime;
-        const timeElapsed = currentTime - startTime;
-        const progress = Math.min(timeElapsed / duration, 1);
-        const easeProgress = easeInOutCubic(progress);
+    // ✅ Easing function untuk animasi lebih natural (easeInOutCubic)
+    const easeInOutCubic = (t) => {
+      return t < 0.5 
+        ? 4 * t * t * t 
+        : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    };
 
-        window.scrollTo(0, startPosition + distance * easeProgress);
+    // ✅ Animation loop dengan requestAnimationFrame
+    const animation = (currentTime) => {
+      if (start === null) start = currentTime;
+      const timeElapsed = currentTime - start;
+      const progress = Math.min(timeElapsed / duration, 1);
+      
+      // Apply easing
+      const easeProgress = easeInOutCubic(progress);
+      
+      // Calculate position with easing
+      const scrollPosition = startPosition + (distance * easeProgress);
+      
+      window.scrollTo({
+        top: scrollPosition,
+        behavior: 'auto' // Gunakan 'auto' karena kita handle animation sendiri
+      });
 
-        if (timeElapsed < duration) {
-          requestAnimationFrame(animation);
-        }
-      };
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animation);
+      } else {
+        // ✅ Setelah selesai, set isScrolling ke false
+        setTimeout(() => {
+          setIsScrolling(false);
+        }, 100);
+      }
+    };
 
-      requestAnimationFrame(animation);
-    }
+    requestAnimationFrame(animation);
   };
 
-  // Handle click untuk link (anchor atau route)
+  // ✅ IMPROVED - Handle link click dengan haptic feedback (untuk mobile)
   const handleLinkClick = (link, e) => {
     if (link.isAnchor) {
       e.preventDefault();
+      
+      // Haptic feedback untuk mobile (jika didukung)
+      if (navigator.vibrate) {
+        navigator.vibrate(10);
+      }
+      
       handleScrollToSection(link.href);
     } else {
       setOpenNav(false);
     }
   };
 
+  // ✅ Handle scroll dari navigate state
+  useEffect(() => {
+    if (location.state?.scrollTo && location.pathname === "/") {
+      // Delay untuk memastikan DOM sudah ready
+      setTimeout(() => {
+        smoothScrollToElement(location.state.scrollTo);
+        // Clear state setelah scroll
+        window.history.replaceState({}, document.title);
+      }, 100);
+    }
+  }, [location]);
+
   return (
     <nav 
       className={`sticky top-0 z-50 transition-all duration-500 ${
         scrolled 
-          ? "bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100" 
-          : "bg-white/80 backdrop-blur-sm shadow-md"
+          ? "bg-[#e3f8df]/20 backdrop-blur-md shadow-lg border-b border-gray-100" 
+          : "bg-[#e3f8df] backdrop-blur-sm shadow-sm"
       }`}
     >
-      <div className="container mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo dengan hover effect */}
+          {/* Logo - Updated to use image */}
           <Link
             to="/"
-            className="flex items-center gap-2 group"
+            className="flex items-center gap-3 group flex-shrink-0"
             onClick={(e) => {
               if (location.pathname === "/") {
                 e.preventDefault();
@@ -213,226 +252,202 @@ export function Navbar() {
               }
             }}
           >
-            <div className="h-10 w-10 bg-[#455300] rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg">
-              <Typography variant="h6" color="white" className="font-bold">
-                DK
-              </Typography>
+            {/* ✅ Logo Image dengan shadow dan border */}
+            <div className="h-12 w-12 rounded-xl overflow-hidden transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg shadow-md border-2 border-white/50">
+              <img 
+                src="/img/logo.png" 
+                alt="Logo Desa Krebet" 
+                className="h-full w-full object-cover"
+              />
             </div>
             <div className="transition-all duration-300 group-hover:translate-x-1">
-              <Typography variant="h6" className="font-bold text-blue-gray-900">
+              <Typography variant="h6" className="font-bold text-[#104911]">
                 Desa Krebet
               </Typography>
-              <Typography variant="small" className="text-gray-600 -mt-1">
+              <Typography variant="small" className="text-[#104911] -mt-1">
                 Kabupaten Madiun
               </Typography>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <ul className="hidden lg:flex items-center gap-8 list-none">
+          <div className="hidden lg:flex items-center space-x-1">
             {navLinks.map((link) =>
               link.isDropdown ? (
-                // Enhanced Dropdown Menu dengan animasi
-                <li key={link.name} className="relative">
+                <div key={link.name} className="relative">
                   <Menu allowHover placement="bottom" offset={10}>
                     <MenuHandler>
                       <button
-                        className={getLinkClass(link)}
-                        onClick={(e) => e.preventDefault()}
+                        className={`${getLinkClass(link)} px-4 py-2 rounded-lg  group`}
                         aria-haspopup="true"
-                        aria-expanded="false"
                       >
-                        <span className="relative">
-                          {link.name}
-                          {/* Animated underline */}
-                          <span 
-                            className={`absolute -bottom-1 left-0 h-0.5 bg-[#455300] transition-all duration-300 ${
-                              link.items.some(item => item.id === activeSection) 
-                                ? "w-full opacity-100" 
-                                : "w-0 opacity-0 group-hover:w-full group-hover:opacity-100"
-                            }`}
-                          />
+                        <span className="flex items-center gap-1">
+                          <span className="relative">
+                            {link.name}
+                            <span 
+                              className={`absolute -bottom-1 left-0 h-0.5 bg-[#104911] transition-all duration-300 ${
+                                isLinkActive(link) 
+                                  ? "w-full opacity-100" 
+                                  : "w-0 opacity-0 group-hover:w-full group-hover:opacity-100"
+                              }`}
+                            />
+                          </span>
+                          <ChevronDownIcon className="h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
                         </span>
-                        <ChevronDownIcon className="h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
                       </button>
                     </MenuHandler>
 
-                    <MenuList className="p-2 shadow-xl border border-gray-100 min-w-[200px] backdrop-blur-sm bg-white/95">
-                      {link.items.map((item) => (
-                        <MenuItem
-                          key={item.name}
-                          onClick={(e) => handleLinkClick(item, e)}
-                          className={`p-3 rounded-lg transition-all duration-200 ${
-                            item.id === activeSection && location.pathname === "/"
-                              ? "bg-blue-50 text-[#455300] font-semibold shadow-sm"
-                              : "hover:bg-blue-50 hover:text-[#455300] hover:shadow-sm"
-                          }`}
-                        >
-                          {item.isAnchor ? (
-                            <button className="w-full text-left flex items-center gap-2">
-                              <span 
-                                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                                  item.id === activeSection && location.pathname === "/"
-                                    ? "bg-[#455300] scale-125"
-                                    : "bg-gray-300 group-hover:bg-[#455300]"
-                                }`}
-                              />
-                              {item.name}
-                            </button>
-                          ) : (
-                            <Link to={item.href} className="block w-full flex items-center gap-2">
-                              <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
-                              {item.name}
-                            </Link>
-                          )}
-                        </MenuItem>
-                      ))}
+                    <MenuList className="p-2 shadow-xl border border-gray-100 min-w-[220px] backdrop-blur-sm bg-white/95">
+                      {link.items.map((item) => {
+                        const isActive = item.id === activeSection && location.pathname === "/";
+                        return (
+                          <MenuItem
+                            key={item.name}
+                            onClick={(e) => handleLinkClick(item, e)}
+                            className={`p-3 rounded-lg transition-all duration-200 flex items-center gap-3 ${
+                              isActive
+                                ? "bg-gradient-to-r from-green-50 to-blue-50 text-[#104911] font-semibold"
+                                : " hover:text-[#104911]"
+                            }`}
+                          >
+                            <span className="text-lg">{item.icon}</span>
+                            <span>{item.name}</span>
+                            {isActive && (
+                              <div className="ml-auto w-2 h-2 bg-[#104911] rounded-full animate-pulse" />
+                            )}
+                          </MenuItem>
+                        );
+                      })}
                     </MenuList>
                   </Menu>
-                </li>
+                </div>
               ) : (
-                // Enhanced Regular Link dengan animated underline
-                <li key={link.name} className="relative">
-                  {link.isRoute ? (
-                    <Link 
-                      to={link.href} 
-                      className={getLinkClass(link)}
-                      onClick={() => setOpenNav(false)}
-                    >
+                <div key={link.name} className="relative">
+                  <Link 
+                    to={link.href}
+                    className={`${getLinkClass(link)} px-4 py-2 rounded-lg  group`}
+                    onClick={() => setOpenNav(false)}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span>{link.icon}</span>
                       <span className="relative">
                         {link.name}
-                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#455300] transition-all duration-300 group-hover:w-full opacity-0 group-hover:opacity-100" />
+                        <span 
+                          className={`absolute -bottom-1 left-0 h-0.5 bg-[#104911] transition-all duration-300 ${
+                            isLinkActive(link)
+                              ? "w-full opacity-100"
+                              : "w-0 opacity-0 group-hover:w-full group-hover:opacity-100"
+                          }`}
+                        />
                       </span>
-                    </Link>
-                  ) : (
-                    <button
-                      onClick={(e) => handleLinkClick(link, e)}
-                      className={getLinkClass(link)}
-                    >
-                      <span className="relative">
-                        {link.name}
-                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#455300] transition-all duration-300 group-hover:w-full opacity-0 group-hover:opacity-100" />
-                      </span>
-                    </button>
-                  )}
-                </li>
+                    </span>
+                  </Link>
+                </div>
               )
             )}
+          </div>
 
-            {/* Optional Login Button dengan enhanced hover */}
-            {/* <li>
-              <Link to="/auth/login">
-                <Button 
-                  size="sm" 
-                  className="bg-[#455300] hover:bg-[#364800] transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                >
-                  Login Admin
-                </Button>
-              </Link>
-            </li> */}
-          </ul>
-
-          {/* Enhanced Mobile Menu Button */}
-          <IconButton
-            variant="text"
-            className="lg:hidden transition-all duration-300 hover:bg-blue-50 hover:text-[#455300]"
-            onClick={() => setOpenNav((p) => !p)}
-            aria-label="Toggle navigation"
-          >
-            {openNav ? (
-              <XMarkIcon className="h-6 w-6 transition-transform duration-300 rotate-90" />
-            ) : (
-              <Bars3Icon className="h-6 w-6 transition-transform duration-300" />
-            )}
-          </IconButton>
+          {/* Mobile Menu Button */}
+          <div className="lg:hidden flex items-center gap-2">
+            <IconButton
+              variant="text"
+              className="text-[#104911] hover:bg-gray-100 hover:text-[#104911] transition-all duration-300"
+              onClick={() => setOpenNav(!openNav)}
+              aria-label="Toggle navigation"
+            >
+              {openNav ? (
+                <XMarkIcon className="h-6 w-6" />
+              ) : (
+                <Bars3Icon className="h-6 w-6" />
+              )}
+            </IconButton>
+          </div>
         </div>
 
-        {/* Enhanced Mobile Navigation dengan animasi */}
-        <div 
-          className={`lg:hidden overflow-hidden transition-all duration-500 ${
-            openNav ? "max-h-96 opacity-100 pb-4" : "max-h-0 opacity-0"
-          }`}
-        >
-          <ul className="flex flex-col gap-1 list-none">
-            {navLinks.map((link) =>
-              link.isDropdown ? (
-                // Enhanced Dropdown Group di Mobile
-                <Fragment key={link.name}>
-                  <li className="mt-4 mb-2 ml-1 ">
+        {/* Mobile Navigation - Fixed positioning */}
+        {openNav && (
+          <div className="lg:hidden fixed inset-x-0 top-16 bg-white/95 backdrop-blur-md shadow-xl border-t border-gray-100 z-40 animate-slide-down">
+            <div className="max-h-[calc(100vh-4rem)] overflow-y-auto pb-6">
+              <div className="px-4 pt-4">
+                {/* Profil Desa Section */}
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-3 px-1">
+                    <div className="w-1 h-4 bg-[#104911] rounded-full"></div>
                     <Typography
                       variant="small"
-                      className="font-bold text-blue-gray-500 uppercase tracking-wide text-xs"
+                      className="font-bold text-[#104911] uppercase tracking-wide"
                     >
-                      {link.name}
+                      Profil Desa
                     </Typography>
-                  </li>
-
-                  {link.items.map((item) => (
-                    <li key={item.name}>
-                      {item.isAnchor ? (
+                  </div>
+                  
+                  <div className="space-y-1">
+                    {navLinks.find(link => link.name === "Profil Desa")?.items.map((item, index) => {
+                      const isActive = item.id === activeSection && location.pathname === "/";
+                      return (
                         <button
+                          key={item.name}
                           onClick={(e) => handleLinkClick(item, e)}
-                          className={getLinkClass(item, true)}
+                          className={`w-full flex items-center gap-3 py-3 px-4 rounded-lg transition-all duration-200 animate-fade-in ${
+                            isActive
+                              ? "bg-gradient-to-r from-green-50 to-blue-50 text-[#104911] font-medium"
+                              : "text-[#104911] hover:bg-gray-50"
+                          }`}
+                          style={{ animationDelay: `${index * 50}ms` }}
                         >
-                          <div className="flex items-center gap-3">
-                            <div 
-                              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                                item.id === activeSection && location.pathname === "/"
-                                  ? "bg-[#455300] scale-125"
-                                  : "bg-gray-300"
-                              }`}
-                            />
-                            {item.name}
-                            {item.id === activeSection && location.pathname === "/" && (
-                              <div className="ml-auto w-2 h-2 bg-[#455300] rounded-full animate-pulse" />
-                            )}
-                          </div>
+                          <span className="text-lg">{item.icon}</span>
+                          <span className="flex-1 text-left">{item.name}</span>
+                          {isActive && (
+                            <div className="w-2 h-2 bg-[#104911] rounded-full animate-pulse" />
+                          )}
                         </button>
-                      ) : (
-                        <Link
-                          to={item.href}
-                          className={getLinkClass(item, true)}
-                          onClick={() => setOpenNav(false)}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-2 h-2 bg-gray-300 rounded-full" />
-                            {item.name}
-                          </div>
-                        </Link>
-                      )}
-                    </li>
-                  ))}
-                </Fragment>
-              ) : (
-                // Enhanced Regular Link di Mobile
-                <li key={link.name}>
-                  {link.isRoute ? (
-                    <Link
-                      to={link.href}
-                      className={getLinkClass(link, true)}
-                      onClick={() => setOpenNav(false)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 bg-gray-300 rounded-full" />
-                        {link.name}
-                      </div>
-                    </Link>
-                  ) : (
-                    <button
-                      onClick={(e) => handleLinkClick(link, e)}
-                      className={getLinkClass(link, true)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 bg-gray-300 rounded-full" />
-                        {link.name}
-                      </div>
-                    </button>
-                  )}
-                </li>
-              )
-            )}
-          </ul>
-        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Other Navigation Links */}
+                <div className="border-t border-gray-100 pt-4">
+                  <div className="space-y-1">
+                    {navLinks
+                      .filter(link => !link.isDropdown)
+                      .map((link, index) => {
+                        const isActive = location.pathname === link.href;
+                        return (
+                          <Link
+                            key={link.name}
+                            to={link.href}
+                            className={`w-full flex items-center gap-3 py-3 px-4 rounded-lg transition-all duration-200 animate-fade-in ${
+                              isActive
+                                ? "bg-gradient-to-r from-green-50 to-blue-50 text-[#104911] font-medium"
+                                : "text-[#104911] hover:bg-gray-50"
+                            }`}
+                            style={{ animationDelay: `${(index + 6) * 50}ms` }}
+                            onClick={() => setOpenNav(false)}
+                          >
+                            <span className="text-lg">{link.icon}</span>
+                            <span className="flex-1 text-left">{link.name}</span>
+                            {isActive && (
+                              <div className="w-2 h-2 bg-[#104911] rounded-full animate-pulse" />
+                            )}
+                          </Link>
+                        );
+                      })}
+                  </div>
+                </div>
+
+                {/* Additional Info */}
+                <div className="mt-6 px-4 py-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg animate-fade-in" style={{ animationDelay: '450ms' }}>
+                  <Typography variant="small" className="text-gray-600 text-center">
+                    Desa Krebet, Kecamatan Pilangkenceng
+                    <br />
+                    Kabupaten Madiun, Jawa Timur
+                  </Typography>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );

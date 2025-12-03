@@ -1,14 +1,15 @@
 import apiClient from '@/api/axiosInstance';
 
-// ✅ Helper function to generate slug from title
-const generateSlug = (title) => {
-  return title
+// ✅ Helper function to generate slug from judul
+const generateSlug = (judul, id) => {
+  if (!judul) return id.toString();
+  return judul
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-')      // Replace spaces with -
-    .replace(/-+/g, '-')       // Replace multiple - with single -
-    .substring(0, 100);        // Limit to 100 characters
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .substring(0, 100) + '-' + id;
 };
 
 export const beritaService = {
@@ -16,11 +17,17 @@ export const beritaService = {
   getAll: async (params = {}) => {
     const response = await apiClient.get('/berita', { params });
     
-    // ✅ Add slug to each berita if not present
     if (response.data.success && response.data.data.data) {
       response.data.data.data = response.data.data.data.map(item => ({
         ...item,
-        slug: item.slug || generateSlug(item.judul) + '-' + item.id
+        slug: item.slug || generateSlug(item.judul, item.id),
+        gambar_url: item.gambar_url || item.gambar,
+        has_gambar: !!item.gambar_url || !!item.gambar,
+        kategori: {
+          key: item.kategori?.key || item.kategori?.nama?.toLowerCase().replace(/\s+/g, '-') || 'berita',
+          label: item.kategori?.label || item.kategori?.nama || 'Berita',
+          id: item.kategori?.id
+        }
       }));
     }
     
@@ -31,33 +38,38 @@ export const beritaService = {
   getById: async (id) => {
     const response = await apiClient.get(`/berita/${id}`);
     
-    // ✅ Add slug if not present
     if (response.data.success && response.data.data) {
-      response.data.data.slug = response.data.data.slug || 
-        generateSlug(response.data.data.judul) + '-' + response.data.data.id;
+      response.data.data = {
+        ...response.data.data,
+        slug: response.data.data.slug || generateSlug(response.data.data.judul, response.data.data.id),
+        gambar_url: response.data.data.gambar_url || response.data.data.gambar,
+        has_gambar: !!response.data.data.gambar_url || !!response.data.data.gambar,
+        kategori: {
+          key: response.data.data.kategori?.key || response.data.data.kategori?.nama?.toLowerCase().replace(/\s+/g, '-') || 'berita',
+          label: response.data.data.kategori?.label || response.data.data.kategori?.nama || 'Berita',
+          id: response.data.data.kategori?.id
+        }
+      };
     }
     
     return response.data;
   },
 
-  // ✅ Get berita by slug (extract ID from slug)
+  // Get berita by slug
   getBySlug: async (slug) => {
     try {
-      // Try to get by slug endpoint first
       const response = await apiClient.get(`/berita/slug/${slug}`);
       return response.data;
     } catch (error) {
-      // ✅ Fallback: Extract ID from slug (format: "judul-berita-123")
       if (error.response?.status === 404) {
         const idMatch = slug.match(/-(\d+)$/);
         
         if (idMatch && idMatch[1]) {
           const id = idMatch[1];
-          console.log('🔄 Fallback: Fetching by ID from slug:', id);
+          console.log('🔄 Fallback: Fetching Berita by ID from slug:', id);
           return await beritaService.getById(id);
         }
         
-        // Try searching by title
         const searchResponse = await apiClient.get('/berita', {
           params: { search: slug.replace(/-/g, ' '), per_page: 1 }
         });
@@ -73,15 +85,45 @@ export const beritaService = {
     }
   },
 
-  // Increment view count
+  // ✅ TAMBAHKAN - Increment view count
   incrementView: async (id) => {
     try {
       const response = await apiClient.post(`/berita/${id}/view`);
+      console.log('📊 View count incremented for berita:', id);
       return response.data;
     } catch (error) {
-      console.warn('View increment not supported:', error);
+      // ⚠️ Jangan throw error jika gagal increment view
+      // Agar tidak mengganggu loading halaman detail
+      console.warn('⚠️ Failed to increment view count:', error.message);
       return { success: false };
     }
+  },
+
+  // Get latest berita
+  getLatest: async (limit = 5) => {
+    const response = await apiClient.get('/berita', { 
+      params: { 
+        per_page: limit,
+        sort_by: 'created_at',
+        order: 'desc'
+      } 
+    });
+    
+    if (response.data.success && response.data.data.data) {
+      response.data.data.data = response.data.data.data.map(item => ({
+        ...item,
+        slug: item.slug || generateSlug(item.judul, item.id),
+        gambar_url: item.gambar_url || item.gambar,
+        has_gambar: !!item.gambar_url || !!item.gambar,
+        kategori: {
+          key: item.kategori?.key || item.kategori?.nama?.toLowerCase().replace(/\s+/g, '-') || 'berita',
+          label: item.kategori?.label || item.kategori?.nama || 'Berita',
+          id: item.kategori?.id
+        }
+      }));
+    }
+    
+    return response.data;
   },
 
   // Search berita
@@ -100,20 +142,15 @@ export const beritaService = {
     return response.data;
   },
 
-  // Get latest berita
-  getLatest: async (limit = 5) => {
+  // Get popular berita
+  getPopular: async (limit = 5) => {
     const response = await apiClient.get('/berita', {
-      params: { per_page: limit, sort_by: 'created_at', order: 'desc' }
+      params: { 
+        per_page: limit,
+        sort_by: 'views',
+        order: 'desc'
+      }
     });
-    
-    // ✅ Add slug to each item
-    if (response.data.success && response.data.data.data) {
-      response.data.data.data = response.data.data.data.map(item => ({
-        ...item,
-        slug: item.slug || generateSlug(item.judul) + '-' + item.id
-      }));
-    }
-    
     return response.data;
   },
 
@@ -127,10 +164,11 @@ export const beritaService = {
       if (response.data.success && response.data.data.data) {
         const categoriesSet = new Set();
         response.data.data.data.forEach(item => {
-          if (item.kategori && item.kategori.key) {
+          if (item.kategori && item.kategori.nama) {
             categoriesSet.add(JSON.stringify({
-              key: item.kategori.key,
-              label: item.kategori.label
+              key: item.kategori.nama.toLowerCase().replace(/\s+/g, '-'),
+              label: item.kategori.nama,
+              id: item.kategori.id
             }));
           }
         });

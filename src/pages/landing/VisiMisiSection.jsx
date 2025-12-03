@@ -14,38 +14,38 @@ export function VisiMisiSection() {
       title: "Peningkatan Kualitas SDM",
       description:
         "Meningkatkan kualitas sumber daya manusia melalui pendidikan, pelatihan, dan pemberdayaan masyarakat",
-      color: "blue",
+      color: "green",
     },
     {
       icon: <GlobeAsiaAustraliaIcon className="h-8 w-8" />,
       title: "Pelestarian Budaya",
       description:
         "Melestarikan dan mengembangkan budaya lokal sebagai identitas desa",
-      color: "blue",
+      color: "green",
     },
     {
       icon: <LightBulbIcon className="h-8 w-8" />,
       title: "Inovasi & Teknologi",
       description:
         "Menerapkan inovasi dan teknologi untuk meningkatkan pelayanan publik",
-      color: "blue",
+      color: "green",
     },
   ];
 
   return (
-    <section id="visi-misi" className="py-20 bg-gradient-to-b from-blue-50 to-white relative">
+    <section id="visi-misi" className="py-20 bg-gradient-to-b  from-white to-[#e3f8df] relative">
       <div className="container mx-auto px-4">
         {/* Section Title */}
         <div className="text-center mb-6">
           <Typography
             variant="h2"
-            className="text-3xl lg:text-5xl font-bold text-blue-gray-900 mb-4"
+            className="text-3xl lg:text-5xl font-bold text-[#104911] mb-4"
           >
             Visi & Misi Desa Krebet
           </Typography>
           <Typography
             variant="lead"
-            className="text-gray-600 max-w-3xl mx-auto"
+            className="text-[#3a623b] max-w-3xl mx-auto"
           >
             Komitmen kami untuk membangun Desa Krebet yang maju, sejahtera, dan
             berdaya saing
@@ -54,7 +54,7 @@ export function VisiMisiSection() {
 
         {/* Visi Card */}
         <div className="max-w-5xl mx-auto mb-16 relative">
-          <Card className="bg-gradient-to-r from-blue-600 to-blue-800 text-white overflow-hidden shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 relative">
+          <Card className="bg-gradient-to-r from-[#29762b] to-[#104911] text-white overflow-hidden shadow-2xl hover:shadow-[#104911]/50 transition-all duration-300 relative">
             <CardBody className="p-8 md:p-12">
               {/* Badge */}
               <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
@@ -97,11 +97,11 @@ export function VisiMisiSection() {
         {/* Misi Section */}
         <div className="mb-12">
           <div className="text-center mb-2">
-            <div className="inline-flex items-center gap-2 bg-blue-100 px-6 py-3 rounded-full mb-4">
-              <RocketLaunchIcon className="h-6 w-6 text-blue-600" />
+            <div className="inline-flex items-center gap-2 bg-green-100 px-6 py-3 rounded-full mb-4">
+              <RocketLaunchIcon className="h-6 w-6 text-[#104911]" />
               <Typography
                 variant="h4"
-                className="font-bold text-blue-900"
+                className="font-bold text-[#104911]"
               >
                 Misi Desa Krebet
               </Typography>
@@ -129,7 +129,7 @@ export function VisiMisiSection() {
                   {/* Content */}
                   <Typography
                     variant="h5"
-                    className="font-bold text-blue-gray-900 mb-3"
+                    className="font-bold text-green-gray-900 mb-3"
                   >
                     {item.title}
                   </Typography>
@@ -144,11 +144,11 @@ export function VisiMisiSection() {
 
         {/* Call to Action */}
         <div className="text-center mt-16">
-          <Card className="inline-block bg-gradient-to-r from-gray-50 to-blue-50 border-2 border-blue-200">
+          <Card className="inline-block bg-gradient-to-r from-gray-50 to-[#e3f8df] border-2 border-[#68ff4a]">
             <CardBody className="p-8">
               <Typography
                 variant="h5"
-                className="font-bold text-blue-gray-900 mb-3"
+                className="font-bold text-[#104911] mb-3"
               >
                 Mari Bersama Membangun Desa Krebet
               </Typography>

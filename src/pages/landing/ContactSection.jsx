@@ -7,10 +7,10 @@ import {
  
 export function ContactSection() {
   return (
-    <section id="contact" className="py-20">
+    <section id="contact" className="py-20 bg-[#e3f8df]">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <Typography variant="h2" className="text-3xl lg:text-5xl font-bold text-blue-gray-900 mb-4">
+          <Typography variant="h2" className="text-3xl lg:text-5xl font-bold text-[#104911] mb-4">
             Hubungi Kami
           </Typography>
           <Typography variant="lead" className="text-gray-600 max-w-3xl mx-auto">
@@ -23,11 +23,11 @@ export function ContactSection() {
             <Card className="mb-6">
               <CardBody>
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-blue-100 rounded-lg">
-                    <MapPinIcon className="h-6 w-6 text-blue-600" />
+                  <div className="p-3 bg-[#e3f8df] rounded-lg">
+                    <MapPinIcon className="h-6 w-6 text-[#104911]" />
                   </div>
                   <div>
-                    <Typography variant="h6" className="font-bold text-blue-gray-900 mb-2">
+                    <Typography variant="h6" className="font-bold text-green-800 mb-2">
                       Alamat
                     </Typography>
                     <Typography className="text-gray-600">
@@ -42,11 +42,11 @@ export function ContactSection() {
             <Card className="mb-6">
               <CardBody>
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-blue-100 rounded-lg">
-                    <PhoneIcon className="h-6 w-6 text-blue-600" />
+                  <div className="p-3 bg-[#e3f8df] rounded-lg">
+                    <PhoneIcon className="h-6 w-6 text-[#104911]" />
                   </div>
                   <div>
-                    <Typography variant="h6" className="font-bold text-blue-gray-900 mb-2">
+                    <Typography variant="h6" className="font-bold text-green-800 mb-2">
                       Telepon
                     </Typography>
                     <Typography className="text-gray-600">
@@ -61,11 +61,11 @@ export function ContactSection() {
             <Card>
               <CardBody>
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-blue-100 rounded-lg">
-                    <EnvelopeIcon className="h-6 w-6 text-blue-600" />
+                  <div className="p-3 bg-[#e3f8df] rounded-lg">
+                    <EnvelopeIcon className="h-6 w-6 text-[#104911]" />
                   </div>
                   <div>
-                    <Typography variant="h6" className="font-bold text-blue-gray-900 mb-2">
+                    <Typography variant="h6" className="font-bold text-green-800 mb-2">
                       Email
                     </Typography>
                     <Typography className="text-gray-600">

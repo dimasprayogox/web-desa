@@ -90,7 +90,7 @@ export function UmkmCard({ umkm }) {
                 value={`${umkm.jumlah_foto} Foto`}
                 color="white"
                 size="sm"
-                className="text-xs bg-white/90 backdrop-blur-sm text-gray-700"
+                className="text-xs bg-white/90 backdrop-blur-sm text-green-700"
                 icon={<PhotoIcon className="h-3 w-3" />}
               />
             </div>
@@ -116,18 +116,11 @@ export function UmkmCard({ umkm }) {
 
           {/* Footer Info */}
           <div className="space-y-2 mt-auto pt-3 border-t">
-            {/* Pemilik (jika ada) */}
-            {umkm.pemilik && (
-              <div className="flex items-center gap-2 text-gray-600 text-xs">
-                <Typography variant="small" className="font-semibold">
-                  Pemilik: {umkm.pemilik}
-                </Typography>
-              </div>
-            )}
+           
 
             {/* Alamat */}
             {umkm.alamat && (
-              <div className="flex items-start gap-2 text-gray-600">
+              <div className="flex items-start gap-2 text-green-600">
                 <MapPinIcon className="h-4 w-4 flex-shrink-0 mt-0.5" />
                 <Typography variant="small" className="line-clamp-1 capitalize">
                   {umkm.alamat}
@@ -137,7 +130,7 @@ export function UmkmCard({ umkm }) {
 
             {/* Telepon */}
             {umkm.telepon && (
-              <div className="flex items-center gap-2 text-gray-600">
+              <div className="flex items-center gap-2 text-green-600">
                 <PhoneIcon className="h-4 w-4" />
                 <Typography variant="small">
                   {umkm.telepon}

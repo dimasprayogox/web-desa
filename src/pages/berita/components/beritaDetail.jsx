@@ -10,6 +10,7 @@ import {
   CalendarIcon,
   UserIcon,
   EyeIcon,
+  PencilIcon,
   TagIcon,
   ArrowLeftIcon,
   ShareIcon,
@@ -45,14 +46,7 @@ export function BeritaDetail() {
       .substring(0, 100) + '-' + id;
   };
 
-  // 🔍 DEBUG LOGS
-  console.group('=== BERITA DETAIL DEBUG ===');
-  console.log('📄 Slug/ID from URL:', slug);
-  console.log('📊 Loading:', loading);
-  console.log('❌ Error:', error);
-  console.log('📈 Berita Data:', berita);
-  console.log('📰 Latest Berita:', latestBerita);
-  console.groupEnd();
+ 
 
   const formatDate = (dateString) => {
     const options = { 
@@ -149,7 +143,7 @@ export function BeritaDetail() {
               {error || 'Berita yang Anda cari tidak tersedia atau telah dihapus.'}
             </Typography>
             <Button
-              color="green"
+              color="gray"
               onClick={() => navigate('/berita')}
               className="flex items-center gap-2 mx-auto"
             >
@@ -181,14 +175,14 @@ export function BeritaDetail() {
   const kategoriColor = kategoriColors[kategoriKey] || kategoriColors.default;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#e3f8df] to-white py-8">
       <div className="container mx-auto px-4">
         {/* Back Button */}
         <div className="mb-6">
           <Button
             variant="text"
             onClick={() => navigate('/berita')}
-            className="flex items-center gap-2 text-green-600 hover:bg-green-50"
+            className="flex items-center gap-2 text-green-800 hover:bg-gray-50"
           >
             <ArrowLeftIcon className="h-4 w-4" />
             Kembali ke Daftar Berita
@@ -225,47 +219,27 @@ export function BeritaDetail() {
                 </Typography>
 
                 {/* Meta Info */}
-                <div className="flex flex-wrap gap-4 pb-6 mb-6 border-b border-gray-200">
-                  <div className="flex items-center gap-2 text-gray-600">
+                <div className="flex flex-wrap gap-4 pb-6 mb-6 border-b border-green-200">
+                  <div className="flex items-center gap-2 text-green-600">
                     <CalendarIcon className="h-5 w-5" />
                     <Typography variant="small">
                       {berita.created_at_human || formatDateShort(berita.created_at)}
                     </Typography>
                   </div>
 
-                  {berita.penulis && (
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <UserIcon className="h-5 w-5" />
-                      <Typography variant="small">{berita.penulis}</Typography>
-                    </div>
-                  )}
+                  
 
-                  {berita.views && (
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <EyeIcon className="h-5 w-5" />
-                      <Typography variant="small">
-                        {berita.views} views
-                      </Typography>
-                    </div>
-                  )}
+                  
 
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <ClockIcon className="h-5 w-5" />
+                  <div className="flex items-center gap-2 text-green-600">
+                    <PencilIcon className="h-5 w-5" />
                     <Typography variant="small">
-                      {calculateReadingTime(berita.isi || berita.konten || berita.content)} baca
+                      Administrator
                     </Typography>
                   </div>
                 </div>
 
-                {/* Excerpt */}
-                {berita.excerpt && (
-                  <Typography 
-                    variant="lead" 
-                    className="text-gray-700 mb-6 font-medium italic border-l-4 border-green-500 pl-4"
-                  >
-                    {berita.excerpt}
-                  </Typography>
-                )}
+                
 
                 {/* Content */}
                 <div className="prose prose-lg max-w-none mb-8">

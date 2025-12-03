@@ -11,9 +11,9 @@ export function BeritaCard({ berita }) {
   const kategoriKey = berita.kategori?.key || 'umum';
 
   const kategoriColors = {
-    'pengumuman': 'blue',
-    'berita': 'green',
-    'kegiatan': 'orange',
+    'pengumuman': 'green',
+    'berita': 'yellow',
+    'kegiatan': 'blue',
     'artikel': 'purple',
     'default': 'gray'
   };
@@ -76,7 +76,7 @@ export function BeritaCard({ berita }) {
           </Typography>
 
           {/* Footer Info */}
-          <div className="flex items-center justify-between text-gray-500 text-xs mt-auto pt-3 border-t">
+          <div className="flex items-center justify-between text-green-600 text-xs mt-auto pt-3 border-t">
             <div className="flex items-center gap-1">
               <CalendarIcon className="h-4 w-4" />
               <span>{berita.created_at_human || 'Baru saja'}</span>

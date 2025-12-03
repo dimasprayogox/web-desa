@@ -10,44 +10,47 @@ export function HeroSection() {
       value: loading ? "..." : stats.penduduk.toLocaleString("id-ID"), 
       label: "Total Penduduk",
       key: "penduduk",
-      color: "blue"
+      hoverColor: "blue-600",
+      hoverBg: "blue-50"
     },
     { 
       value: loading ? "..." : stats.kk.toLocaleString("id-ID"), 
       label: "Kepala Keluarga",
       key: "kk",
-      color: "green"
+      hoverColor: "green-600",
+      hoverBg: "green-50"
     },
     { 
       value: loading ? "..." : stats.laki_laki.toLocaleString("id-ID"), 
       label: "Laki-Laki",
       key: "laki_laki",
-      color: "indigo"
+      hoverColor: "gray-900",
+      hoverBg: "gray-700"
     },
     { 
       value: loading ? "..." : stats.perempuan.toLocaleString("id-ID"), 
       label: "Perempuan",
       key: "perempuan",
-      color: "pink"
+      hoverColor: "red-600",
+      hoverBg: "red-50"
     },
   ];
 
   return (
-    <section id="home" className="relative py-20 lg:py-32">
+    <section id="home" className="relative py-20 lg:py-32 bg-[#e3f8df]">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Text Content */}
           <div>
             <Typography 
               variant="h1" 
-              className="text-4xl lg:text-6xl font-bold text-blue-gray-900 mb-6"
+              className="text-4xl lg:text-6xl font-bold text-[#104911] mb-6"
             >
               Selamat Datang di
-              <span className="text-blue-600"> Desa Krebet</span>
+              <span className="text-[#69d223]"> Desa Krebet</span>
             </Typography>
             <Typography variant="lead" className="text-gray-600 mb-8">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat
-            </Typography>
+           Desa Krebet merupakan salah satu desa di Kecamatan Pilangkenceng, Kabupaten Madiun. Masyarakatnya sebagian besar bekerja di sektor pertanian, peternakan, serta usaha kecil dan menengah. Desa ini juga memiliki potensi alam yang asri dengan lingkungan yang hijau, serta nilai kearifan lokal yang terus dijaga dari generasi ke generasi. </Typography>
           </div>
 
           {/* Hero Image dengan Efek yang Diperbaiki */}
@@ -56,8 +59,8 @@ export function HeroSection() {
               {/* Main Image Container */}
               <div className="rounded-2xl w-full h-[400px] overflow-hidden 
                             bg-gradient-to-br from-blue-400 to-blue-600 
-                            shadow-2xl shadow-blue-500/25 
-                            hover:shadow-3xl hover:shadow-blue-500/40 
+                            shadow-2xl shadow-gray-900/60 
+                            hover:shadow-3xl hover:shadow-gray-900/60 
                             transition-all duration-500 ease-out
                             transform group-hover:scale-[1.02]">
                 <img 
@@ -96,47 +99,52 @@ export function HeroSection() {
               </div>
               
               {/* Floating Elements */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-yellow-400 rounded-full 
+              <div className="absolute -top-4 -right-4 w-8 h-8 bg-yellow-300 rounded-full 
                             shadow-lg shadow-yellow-500/50 animate-pulse"></div>
               <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-green-400 rounded-full 
                             shadow-lg shadow-green-500/50 animate-pulse delay-1000"></div>
             </div>
             
             {/* Badge dengan Efek Shadow yang Diperbaiki */}
-            <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl 
+            <div className="absolute -bottom-6 -left-6 bg-gray-100 p-6 rounded-xl 
                           shadow-2xl shadow-gray-500/25 
                           hover:shadow-3xl hover:shadow-gray-500/40 
                           transition-all duration-300 
                           transform hover:-translate-y-1">
-              <Typography variant="h4" className="text-blue-600 font-bold">
-                Desa Budaya
+              <Typography variant="h4" className="text-[#69d223] font-bold">
+                Desa Krebet
               </Typography>
               <Typography variant="small" className="text-gray-600">
-                lorem ipsum dolor sit amet
+                Pilangkenceng, Madiun
               </Typography>
             </div>
 
             {/* Decorative Corner Accents */}
-            <div className="absolute -top-2 -right-2 w-16 h-16 border-t-2 border-r-2 border-blue-300 rounded-tr-2xl 
+            <div className="absolute -top-2 -right-2 w-16 h-16 border-t-2 border-r-2 border-green-300 rounded-tr-2xl 
                           opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="absolute -bottom-2 -left-2 w-16 h-16 border-b-2 border-l-2 border-blue-300 rounded-bl-2xl 
-                          opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
           </div>
         </div>
 
-        {/* Stats Cards */}
+        {/* ✅ Stats Cards - Gray default, colored on hover */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-20">
           {statsDisplay.map((stat) => (
             <Card 
               key={stat.key} 
-              className="text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              className={`text-center transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl
+                        group cursor-pointer overflow-hidden relative
+                        hover:bg-${stat.hoverBg}`}
             >
-              <CardBody>
+              {/* Animated background gradient on hover */}
+              <div className={`absolute inset-0 bg-gradient-to-br from-${stat.hoverBg} to-white opacity-0 
+                             group-hover:opacity-100 transition-opacity duration-300`}></div>
+              
+              <CardBody className="relative z-10">
                 {loading ? (
                   // Loading Skeleton
                   <div className="animate-pulse">
-                    <div className="h-12 bg-gray-200 rounded mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+                    <div className="h-12 bg-gray-300 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-300 rounded w-3/4 mx-auto"></div>
                   </div>
                 ) : error ? (
                   // Error State
@@ -149,17 +157,25 @@ export function HeroSection() {
                   <>
                     <Typography 
                       variant="h2" 
-                      color={stat.color}
-                      className="font-bold mb-2"
+                      className={`font-bold mb-2 transition-colors duration-300
+                                text-green-700 group-hover:text-${stat.hoverColor}
+                                transform group-hover:scale-110 transition-transform`}
                     >
                       {stat.value}
                     </Typography>
                     <Typography 
                       variant="small" 
-                      className="text-gray-600 font-medium uppercase tracking-wide"
+                      className="text-gray-600 font-medium uppercase tracking-wide
+                               group-hover:text-gray-700 transition-colors duration-300"
                     >
                       {stat.label}
                     </Typography>
+
+                    {/* Icon indicator on hover */}
+                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 
+                                  transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                      <div className={`w-2 h-2 rounded-full bg-${stat.hoverColor} animate-pulse`}></div>
+                    </div>
                   </>
                 )}
               </CardBody>
