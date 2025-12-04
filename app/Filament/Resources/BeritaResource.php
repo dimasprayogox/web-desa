@@ -57,30 +57,30 @@ class BeritaResource extends Resource
                             ->helperText('Konten lengkap berita')
                             ->columnSpanFull(),
 
-                // Ganti nama field ke 'gambar' agar sesuai model Berita
-                Forms\Components\FileUpload::make('gambar_url')
-                    ->label('Gambar Berita')
-                    ->image()
-                    ->directory(config('media.directories.berita', 'berita'))
-                    ->disk('public') // simpan ke storage/app/public
-                    ->visibility('public')
-                    ->maxSize(config('media.uploads.max_size', 2048))
-                    ->acceptedFileTypes(array_map(
-                        fn($ext) => "image/{$ext}",
-                        config('media.uploads.allowed_extensions', ['jpeg', 'png', 'jpg', 'gif'])
-                    ))
-                    ->imageResizeMode('cover')
-                    ->imageCropAspectRatio('16:9')
-                    ->imageResizeTargetWidth(config('media.uploads.resize_width', 800))
-                    ->imageResizeTargetHeight(config('media.uploads.resize_height', 450))
-                    ->getUploadedFileNameForStorageUsing(fn($file) => time() . '_' . preg_replace('/[^A-Za-z0-9\-\_\.]/', '_', $file->getClientOriginalName()))
-                    ->helperText(function () {
-                        $maxSize = config('media.uploads.max_size', 2048) / 1024;
-                        $formats = implode(', ', config('media.uploads.allowed_extensions', []));
-                        return "Upload gambar untuk berita (maks {$maxSize}MB, format: {$formats}). Storage: lokal (public).";
-                    })
-                    ->columnSpanFull(),
-            ])->columns(1),
+                        // Ganti nama field ke 'gambar' agar sesuai model Berita
+                        Forms\Components\FileUpload::make('gambar_url')
+                            ->label('Gambar Berita')
+                            ->image()
+                            ->directory(config('media.directories.berita', 'berita'))
+                            ->disk('public') // simpan ke storage/app/public
+                            ->visibility('public')
+                            ->maxSize(config('media.uploads.max_size', 2048))
+                            ->acceptedFileTypes(array_map(
+                                fn($ext) => "image/{$ext}",
+                                config('media.uploads.allowed_extensions', ['jpeg', 'png', 'jpg', 'gif'])
+                            ))
+                            ->imageResizeMode('cover')
+                            ->imageCropAspectRatio('16:9')
+                            ->imageResizeTargetWidth(config('media.uploads.resize_width', 800))
+                            ->imageResizeTargetHeight(config('media.uploads.resize_height', 450))
+                            ->getUploadedFileNameForStorageUsing(fn($file) => time() . '_' . preg_replace('/[^A-Za-z0-9\-\_\.]/', '_', $file->getClientOriginalName()))
+                            ->helperText(function () {
+                                $maxSize = config('media.uploads.max_size', 2048) / 1024;
+                                $formats = implode(', ', config('media.uploads.allowed_extensions', []));
+                                return "Upload gambar untuk berita (maks {$maxSize}MB, format: {$formats}). Storage: lokal (public).";
+                            })
+                            ->columnSpanFull(),
+                    ])->columns(1),
             ]);
     }
 
@@ -112,46 +112,24 @@ class BeritaResource extends Resource
                     })
                     ->formatStateUsing(fn(string $state): string => Berita::getKategoriOptions()[$state] ?? $state),
 
-            // ImageColumn menggunakan disk 'public' (lokal)
-            Tables\Columns\ImageColumn::make('gambar_url')
-                ->label('Gambar')
-                ->circular()
-                ->disk('public')
-                ->defaultImageUrl(url('/images/no-image.png'))
-                ->size(40)
-                ->toggleable()
-                ->getStateUsing(function ($record) {
-                    $value = $record->gambar_url ?? null;
-
-                    if (empty($value)) return null;
-
-                    // jika sudah array (cast di model)
-                    if (is_array($value)) {
-                        $first = collect($value)->first();
-                        if (is_string($first)) return $first;
-                        if (is_array($first) && isset($first['path'])) return $first['path'];
-                        if (is_object($first) && isset($first->path)) return $first->path;
-                        return null;
-                    }
-
-                    // jika string: coba decode JSON, kalau bukan JSON anggap path
-                    if (is_string($value)) {
-                        $decoded = json_decode($value, true);
-                        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                            $first = collect($decoded)->first();
-                            if (is_string($first)) return $first;
-                            if (is_array($first) && isset($first['path'])) return $first['path'];
-                            if (is_object($first) && isset($first->path)) return $first->path;
+                // ImageColumn menggunakan disk 'public' (lokal)
+                Tables\Columns\ImageColumn::make('gambar_url')
+                    ->label('Gambar')
+                    ->circular()
+                    ->defaultImageUrl(url('/images/no-image.png'))
+                    ->size(40)
+                    ->toggleable()
+                    ->getStateUsing(function ($record) {
+                        $path = $record->getAttributes()['gambar_url'];
+                        if (empty($path)) {
+                            return null;
                         }
-
-                        return $value;
-                    }
-
-                    return null;
-                }),
+                        // ✅ Return URL absolut langsung
+                        return url('storage/' . $path);
+                    }),
 
 
-            Tables\Columns\TextColumn::make('isi')
+                Tables\Columns\TextColumn::make('isi')
                     ->label('Isi')
                     ->limit(100)
                     ->html()

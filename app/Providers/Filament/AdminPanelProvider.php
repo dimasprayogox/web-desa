@@ -25,8 +25,11 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('')  // ✅ URL: /admin
+            ->path('admin')  // ✅ URL: /admin
             ->login()        // ✅ Auto-generate /admin/login
+            ->authMiddleware([
+                Authenticate::class,  // ✅ Pastikan ini ada
+            ])
             ->colors([
                 'primary' => Color::Amber,
             ])

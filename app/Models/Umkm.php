@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class Umkm extends Model
 {
@@ -63,7 +64,6 @@ class Umkm extends Model
         return 'Rp ' . number_format((float) $this->omset_per_bulan, 0, ',', '.');
     }
 
-  
     // Scope untuk pencarian
     public function scopeSearch($query, $search)
     {
@@ -73,5 +73,29 @@ class Umkm extends Model
                 ->orWhere('jenis_usaha', 'like', "%{$search}%")
                 ->orWhere('deskripsi', 'like', "%{$search}%");
         });
+    }
+
+    // Jika ingin tetap ada accessor untuk frontend, ubah jadi method biasa:
+    public function getFotoGaleriUrls(): array
+    {
+        $paths = $this->getAttributes()['foto_galeri'];
+
+        if (empty($paths)) {
+            return [];
+        }
+
+        // Decode JSON jadi array
+        if (is_string($paths)) {
+            $paths = json_decode($paths, true);
+        }
+
+        if (!is_array($paths)) {
+            return [];
+        }
+
+        // Return array URL absolut
+        return array_map(function ($path) {
+            return Storage::disk('public')->url($path);
+        }, $paths);
     }
 }

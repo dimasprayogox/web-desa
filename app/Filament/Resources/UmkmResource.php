@@ -109,42 +109,33 @@ class UmkmResource extends Resource
                     ->sortable()
                     ->weight('medium'),
                 Tables\Columns\ImageColumn::make('foto_galeri')
-                    ->label('Foto')
-                    ->disk('public')
-                    ->square()
-                    ->size(60)
+                    ->label('Galeri')
+                    ->stacked() // ✅ Tampilkan multiple images bertumpuk
+                    ->limit(3) // Maksimal tampilkan 3
+                    ->limitedRemainingText() // Tampilkan "+2 more"
+                    ->circular()
+                    ->size(50)
                     ->getStateUsing(function ($record) {
-                        $value = $record->foto_galeri;
+                        // ✅ Ambil raw value, skip accessor
+                        $value = $record->getAttributes()['foto_galeri'];
 
-                        // null atau kosong
                         if (empty($value)) {
-                            return null;
+                            return [];
                         }
 
-                        // kalau sudah jadi array (karena cast 'array' di model)
-                        if (is_array($value)) {
-                            $first = collect($value)->first();
-                            if (is_array($first) && isset($first['path'])) return $first['path'];
-                            if (is_object($first) && isset($first->path)) return $first->path;
-                            if (is_string($first)) return $first;
-                            return null;
-                        }
-
-                        // kalau masih string (bisa path langsung atau string JSON)
+                        // Decode JSON jadi array
                         if (is_string($value)) {
-                            $maybe = json_decode($value, true);
-                            if (json_last_error() === JSON_ERROR_NONE && is_array($maybe)) {
-                                $first = collect($maybe)->first();
-                                if (is_array($first) && isset($first['path'])) return $first['path'];
-                                if (is_object($first) && isset($first->path)) return $first->path;
-                                if (is_string($first)) return $first;
-                            }
-
-                            // kalau bukan JSON, anggap dia path langsung
-                            return $value;
+                            $value = json_decode($value, true);
                         }
 
-                        return null;
+                        if (!is_array($value)) {
+                            return [];
+                        }
+
+                        // ✅ Return array URL absolut
+                        return array_map(function ($path) {
+                            return url('storage/' . $path);
+                        }, $value);
                     }),
 
 
