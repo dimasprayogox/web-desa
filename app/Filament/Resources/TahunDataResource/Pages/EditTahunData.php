@@ -14,13 +14,28 @@ class EditTahunData extends EditRecord
     {
         return [
             Actions\DeleteAction::make()
-                ->after(fn() => $this->redirect($this->getResource()::getUrl('index'))),
+                ->after(fn() => $this->redirect($this->getRedirectUrl())),
         ];
     }
 
     protected function getRedirectUrl(): string
     {
-        return $this->getResource()::getUrl('index');
+        $indexPath = $this->getResource()::getUrl('index');
+
+        // jika absolute URL, ambil path saja
+        if (strpos($indexPath, '://') !== false) {
+            $indexPath = parse_url($indexPath, PHP_URL_PATH) ?: '/';
+        }
+
+        if (!str_starts_with($indexPath, '/')) {
+            $indexPath = '/' . ltrim($indexPath, '/');
+        }
+
+        if (!str_starts_with($indexPath, '/admin')) {
+            $indexPath = '/admin' . $indexPath;
+        }
+
+        return url($indexPath);
     }
 
     protected function getSavedNotificationTitle(): ?string

@@ -14,15 +14,32 @@ class EditDemografiDusun extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->after(fn() => $this->redirect($this->getRedirectUrl())),
         ];
     }
 
-    protected function mutateFormDataBeforeSave(array $data): array
+    protected function getRedirectUrl(): string
     {
-        if (isset($data['laki_laki']) && isset($data['perempuan'])) {
-            $data['total_penduduk'] = $data['laki_laki'] + $data['perempuan'];
+        $indexPath = $this->getResource()::getUrl('index');
+
+        if (strpos($indexPath, '://') !== false) {
+            $indexPath = parse_url($indexPath, PHP_URL_PATH) ?: '/';
         }
-        return $data;
+
+        if (!str_starts_with($indexPath, '/')) {
+            $indexPath = '/' . ltrim($indexPath, '/');
+        }
+
+        if (!str_starts_with($indexPath, '/admin')) {
+            $indexPath = '/admin' . $indexPath;
+        }
+
+        return url($indexPath);
+    }
+
+    protected function getSavedNotificationTitle(): ?string
+    {
+        return 'Data Dusun berhasil diperbarui!';
     }
 }

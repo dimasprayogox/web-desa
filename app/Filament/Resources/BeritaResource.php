@@ -61,7 +61,7 @@ class BeritaResource extends Resource
                         Forms\Components\FileUpload::make('gambar_url')
                             ->label('Gambar Berita')
                             ->image()
-                            ->directory(config('media.directories.berita', 'berita'))
+                            ->directory('berita/images')
                             ->disk('public') // simpan ke storage/app/public
                             ->visibility('public')
                             ->maxSize(config('media.uploads.max_size', 2048))

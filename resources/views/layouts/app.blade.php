@@ -13,6 +13,28 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+            <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Ensure Livewire script loads from published assets in public/vendor/livewire (admin/vendor/livewire) --}}
+    @php
+        // public_path() sudah dibind ke /public_html/admin lewat index.php kita
+        $livewirePath = public_path('vendor/livewire/livewire.js');
+    @endphp
+
+    @if (file_exists($livewirePath))
+        <script
+            src="{{ asset('vendor/livewire/livewire.js') }}?id={{ \Illuminate\Support\Str::random(8) }}"
+            data-csrf="{{ csrf_token() }}"
+            data-update-uri="{{ url('/livewire/update') }}"
+            data-navigate-once="true"
+            defer
+        ></script>
+    @else
+        {{-- fallback ke Livewire default (jika assets belum dipublish) --}}
+        @livewireScripts
+    @endif
+
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">

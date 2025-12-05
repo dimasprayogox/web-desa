@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\DetailApbdes\Pages;
+use App\Filament\Resources\DetailApbdesResource\Pages;
 use App\Models\DetailApbdes;
 use Filament\Forms;
 use Filament\Forms\Form;

@@ -4,7 +4,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\BeritaController;
 use App\Http\Controllers\Api\UmkmController;
-use App\Http\Controllers\Api\StrukturOrganisasiController;
 use App\Http\Controllers\Api\TahunDataController;
 use App\Http\Controllers\Api\DemografiDetailController;
 use App\Http\Controllers\Api\DetailApbdesController;
@@ -60,34 +59,6 @@ Route::prefix('umkm')->name('api.umkm.')->group(function () {
     Route::get('/featured', [UmkmController::class, 'featured'])->name('featured');
     Route::get('/statistics/summary', [UmkmController::class, 'summary'])->name('summary');
     Route::get('/search', [UmkmController::class, 'search'])->name('search');
-});
-
-/*
-|--------------------------------------------------------------------------
-| STRUKTUR ORGANISASI ROUTES
-|--------------------------------------------------------------------------
-*/
-Route::prefix('struktur-organisasi')->name('api.struktur.')->group(function () {
-    // Statistics & Info
-    Route::get('/statistics', [StrukturOrganisasiController::class, 'statistics'])->name('statistics');
-
-    // Special Endpoints
-    Route::get('/kepala-desa', [StrukturOrganisasiController::class, 'kepalaDesa'])->name('kepala-desa');
-    Route::get('/perangkat-desa', [StrukturOrganisasiController::class, 'perangkatDesa'])->name('perangkat');
-    Route::get('/bpd', [StrukturOrganisasiController::class, 'bpd'])->name('bpd');
-    Route::get('/hierarchy', [StrukturOrganisasiController::class, 'hierarchy'])->name('hierarchy');
-    Route::get('/chart', [StrukturOrganisasiController::class, 'chart'])->name('chart');
-    Route::get('/kontak', [StrukturOrganisasiController::class, 'kontak'])->name('kontak');
-
-    // Search
-    Route::get('/search', [StrukturOrganisasiController::class, 'search'])->name('search');
-
-    // By Jabatan
-    Route::get('/jabatan/{jabatan}', [StrukturOrganisasiController::class, 'byJabatan'])->name('jabatan');
-
-    // List & Detail (taruh paling bawah)
-    Route::get('/', [StrukturOrganisasiController::class, 'index'])->name('index');
-    Route::get('/{id}', [StrukturOrganisasiController::class, 'show'])->name('show');
 });
 
 /*

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\DetailApbdes\Pages;
+namespace App\Filament\Resources\DetailApbdesResource\Pages;
 
 use App\Filament\Resources\DetailApbdesResource;
-use Filament\Actions\CreateAction;
+use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
 class ListDetailApbdes extends ListRecords
@@ -13,7 +13,7 @@ class ListDetailApbdes extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            Actions\CreateAction::make(),
         ];
     }
 }
