@@ -1,187 +1,160 @@
-# [Material Tailwind Dashboard React](http://demos.creative-tim.com/material-tailwind-dashboard-react/#/?ref=readme-mtdr) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter)](https://twitter.com/intent/tweet?url=https://www.creative-tim.com/product/material-tailwind-dashboard-react&text=Check%20Material%20Tailwind%20Dashboard%20React%20made%20by%20@CreativeTim%20#webdesign%20#kit%20#materialdesign%20#react%20#materialtailwind%20#tailwindcss%20https://www.creative-tim.com/product/material-tailwind-dashboard-react)
+# 🌐 Web Desa Krebet — Frontend Portal Publik
 
-![version](https://img.shields.io/badge/version-2.1.0-blue.svg) [![GitHub issues open](https://img.shields.io/github/issues/creativetimofficial/material-tailwind-dashboard-react.svg)](https://github.com/creativetimofficial/material-tailwind-dashboard-react/issues?q=is%3Aopen+is%3Aissue) [![GitHub issues closed](https://img.shields.io/github/issues-closed-raw/creativetimofficial/material-tailwind-dashboard-react.svg)](https://github.com/creativetimofficial/material-tailwind-dashboard-react/issues?q=is%3Aissue+is%3Aclosed)
+[![React](https://img.shields.io/badge/React_JS-18.2.0-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-4.5.0-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.4-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Material Tailwind](https://img.shields.io/badge/Material_Tailwind-2.1.4-0284C7?style=flat)](https://www.material-tailwind.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-![Image](https://s3.amazonaws.com/creativetim_bucket/products/488/original/material-tailwind-dashboard-react.jpg)
+Branch repositori khusus **Frontend Portal Publik** untuk Sistem Informasi Desa Krebet. Dibangun menggunakan **React JS**, **Vite**, dan **Tailwind CSS** sebagai antarmuka satu pintu yang menyajikan profil wilayah, warta berita, direktori UMKM lokal, serta visualisasi infografis transparansi APBDes dan kependudukan.
 
-Material Tailwind Dashboard React is our newest free Material Tailwind Admin Template based on Tailwind CSS and React. If you’re a developer looking to create an admin dashboard that is developer-friendly, rich with features, and highly customisable, here is your match. Our innovative Material Tailwind, Tailwind CSS & React dashboard comes with a beautiful design inspired by Google's Material Design and it will help you create stunning websites & web apps to delight your clients.
+---
 
-**Fully Coded Elements**
+## 📸 Tampilan Antarmuka (Screenshots)
 
-Material Tailwind Dashboard React is built with over 40 frontend individual elements coming from @material-tailwind/react, like buttons, inputs, navbars, nav tabs, cards, or alerts, giving you the freedom of choosing and combining. All components can take variations in color, which you can easily modify using props and tailwind css classnames. You will save a lot of time going from prototyping to full-functional code because all elements are implemented.
+### 1. Landing Page (Hero Section & Ringkasan Statistik)
+> *Menampilkan identitas visual desa, sambutan resmi, serta widget ringkasan statistik kependudukan (Total Penduduk, KK, Rasio Gender) yang diambil secara dinamis dari API backend.*
 
-This free Material Tailwind, Tailwind CSS & React Dashboard is coming with prebuilt design blocks, so the development process is seamless, switching from our pages to the real website is very easy to be done.
+![Landing Page Hero Section](./screenshots/landing.jpg)
 
-View [all components here](https://www.material-tailwind.com/docs/react/button).
+---
 
-**Documentation built by Developers**
+### 2. Laman Berita & Warta Desa
+> *Katalog publikasi artikel, pengumuman, dan liputan kegiatan warga desa dilengkapi pencarian instan dan filter multi-kategori.*
 
-Each element is well presented in very complex documentation.
+![Laman Berita Desa](./screenshots/news.jpg)
 
-You can read more about the [documentation here](https://www.material-tailwind.com/docs/react/installation).
+---
 
-**Example Pages**
+### 3. Panel Manajemen Admin (Filament CMS)
+> *Pratinjau antarmuka backoffice pengelola (berbasis Laravel + Filament PHP) yang mengelola konten berita, demografi dusun, produk UMKM, dan anggaran APBDes.*
 
-If you want to get inspiration or just show something directly to your clients, you can jump-start your development with our pre-built example pages. You will be able to quickly set up the basic structure for your web project.
+![Panel Admin Filament](./screenshots/admin.jpg)
 
-View [example pages here](https://demos.creative-tim.com/material-tailwind-dashboard-react/#/dashboard/home).
+---
 
-**HELPFUL LINKS**
+## ✨ Fitur Utama Frontend
 
-- View [Github Repository](https://github.com/creativetimofficial/material-tailwind-dashboard-react)
-- Check [FAQ Page](https://www.creative-tim.com/faq)
+- **🏡 Landing Page Interaktif:**
+  - Hero section responsif dengan live counter statistik kependudukan dari backend.
+  - Seksi Sambutan Kepala Desa, Visi & Misi, dan Potensi Unggulan Desa Krebet.
+  - Shortcut layanan publik desa, peta lokasi dusun, dan kontak resmi.
+- **📰 Portal Berita & Pengumuman:**
+  - Feed berita terbitan desa dengan badge kategori dan metadata tanggal.
+  - Filter kategori dinamis (Kegiatan, Pembangunan, Pengumuman, dll).
+  - Halaman detail berita dengan pelacak tayangan (*view counter*).
+- **🏪 Direktori & Promosi UMKM Krebet:**
+  - Katalog profil UMKM desa (kerajinan batik kayu, kuliner, agrikultur, jasa kreatif).
+  - Halaman rincian profil usaha, etalase produk, dan tombol kontak WhatsApp langsung.
+- **📊 Infografis & Visualisasi APBDes:**
+  - Visualisasi grafik interaktif realisasi Pendapatan, Belanja, dan Pembiayaan Desa.
+  - Diagram piramida penduduk dan perbandingan statistik demografi antar-dusun.
 
-#### Special thanks
+---
 
-During the development of this dashboard, we have used many existing resources from awesome developers. We want to thank them for providing their tools open source:
+## 🛠️ Tech Stack & Dependensi
 
-- [Material Tailwind](https://material-tailwind.com/) - Material Tailwind is an easy to use components library for Tailwind CSS and Material Design.
-- [Hero Icons](https://heroicons.com/) - Beautiful hand-crafted SVG icons.
-- [Apex Charts](https://apexcharts.com/) - Modern & Interactive open-source Charts.
-- [Nepcha Analytics](https://nepcha.com?ref=readme) for the analytics tool. Nepcha is already integrated with Material Tailwind Dashboard React. You can use it to gain insights into your sources of traffic.
+| Layer / Tool | Paket & Teknologi | Kegunaan |
+|---|---|---|
+| **Core Framework** | React JS (v18.2) | Library komponen UI reaktif |
+| **Bundler / Server** | Vite (v4.5) | Fast build tool & local dev server |
+| **Styling** | Tailwind CSS 3 & Material Tailwind | Utility CSS dan komponen desain material siap pakai |
+| **Routing** | React Router DOM (v6.17) | Navigasi SPA (Single Page Application) |
+| **API Client** | Axios | Request HTTP client ke backend Laravel API |
+| **Charts** | ApexCharts & Chart.js | Visualisasi diagram batang, pie, dan piramida data |
+| **Icons** | Heroicons & React Icons | Ikon antarmuka navigasi dan aksi |
 
-Let us know your thoughts below. And good luck with development!
+---
 
-## Table of Contents
+## 📁 Struktur Direktori (Branch Frontend)
 
-- [Versions](#versions)
-- [Demo](#demo)
-- [Quick Start](#quick-start)
-- [Deploy](#deploy)
-- [Documentation](#documentation)
-- [File Structure](#file-structure)
-- [Browser Support](#browser-support)
-- [Resources](#resources)
-- [Reporting Issues](#reporting-issues)
-- [Technical Support or Questions](#technical-support-or-questions)
-- [Licensing](#licensing)
-- [Useful Links](#useful-links)
-
-## Versions
-
-[<img src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/logos/react-logo.jpg?raw=true" width="60" height="60" />](https://www.creative-tim.com/product/material-tailwind-dashboard-react?ref=readme-mtdr)
-
-| React |
-| ----- |
-
-| [![Material Tailwind Dashboard React](https://s3.amazonaws.com/creativetim_bucket/products/488/thumb/material-tailwind-dashboard-react.jpg)](http://demos.creative-tim.com/material-tailwind-dashboard-react/#/?ref=readme-mtdr)
-
-## Demo
-
-- [Dashboard page](https://demos.creative-tim.com/material-tailwind-dashboard-react/#/dashboard/home?ref=readme-mtdr)
-- [Profile page](https://demos.creative-tim.com/material-tailwind-dashboard-react/#/dashboard/profile?ref=readme-mtdr)
-- [Tables page](https://demos.creative-tim.com/material-tailwind-dashboard-react/#/dashboard/tables?ref=readme-mtdr)
-- [Notifications page](https://demos.creative-tim.com/material-tailwind-dashboard-react/#/dashboard/notifications?ref=readme-mtdr)
-- [Sign in page](https://demos.creative-tim.com/material-tailwind-dashboard-react/#/auth/sign-in?ref=readme-mtdr)
-- [Sign up page](https://demos.creative-tim.com/material-tailwind-dashboard-react/#/auth/sign-up?ref=readme-mtdr)
-
-[View More](https://demos.creative-tim.com/material-tailwind-dashboard-react/#/?ref=readme-mtdr).
-
-## Quick start
-
-Quick start options:
-
-- Download from [Creative Tim](https://www.creative-tim.com/product/material-tailwind-dashboard-react?ref=readme-mtdr).
-
-## Deploy
-
-:rocket: You can deploy your own version of the template to Genezio with one click:
-
-[![Deploy to Genezio](https://raw.githubusercontent.com/Genez-io/graphics/main/svg/deploy-button.svg)](https://app.genez.io/start/deploy?repository=https://github.com/creativetimofficial/material-tailwind-dashboard-react&utm_source=github&utm_medium=referral&utm_campaign=github-creativetim&utm_term=deploy-project&utm_content=button-head)
-
-## Terminal Commands
-
-1. Download and Install NodeJs LTS version from [NodeJs Official Page](https://nodejs.org/en/download/).
-2. Navigate to the root ./ directory of the product and run `npm install` or `yarn install` or `pnpm install` to install our local dependencies.
-
-## Documentation
-
-The documentation for the Material Tailwind Dashboard React is hosted at our [website](https://material-tailwind.com/?ref=readme-mtdr).
-
-### What's included
-
-Within the download you'll find the following directories and files:
-
-```
-material-tailwind-dashboard-react
-    ├── public
-    │   ├── css
-    │   └── img
-    ├── src
-    │   ├── configs
-    │   ├── context
-    │   ├── data
-    │   ├── layouts
-    │   ├── pages
-    │   ├── widgets
-    │   ├── App.jsx
-    │   ├── main.jsx
-    │   └── routes.jsx
-    ├── .gitignore
-    ├── CHANGELOG.md
-    ├── index.html
-    ├── ISSUE_TEMPLATE.md
-    ├── jsconfig.json
-    ├── LICENSE
-    ├── package.json
-    ├── postcsss.config.cjs
-    ├── prettier.config.cjs
-    ├── README.md
-    ├── tailwind.config.cjs
-    └── vite.config.js
+```text
+.
+├── public/                  # Aset statis (logo desa, favicon, gambar aset)
+├── screenshots/             # Tangkapan layar antarmuka untuk dokumentasi
+│   ├── hero-section.jpg     # Screenshot hero section landing page
+│   ├── laman-berita.svg     # Screenshot laman berita
+│   └── admin-panel.svg      # Screenshot admin panel
+├── src/
+│   ├── api/                 # Konfigurasi Axios instance & services API
+│   │   └── services/        # Service modul: Berita, UMKM, Demografi, APBDes
+│   ├── components/          # Komponen global (Navbar, Footer, ProtectedRoute)
+│   ├── configs/             # Konfigurasi chart dan layout
+│   ├── context/             # Global React state context
+│   ├── hooks/               # Custom hooks data fetching (useStats, useBerita, dll)
+│   ├── pages/
+│   │   ├── landing/         # Komponen seksi Landing Page (Hero, Visi-Misi, Layanan)
+│   │   ├── berita/          # Daftar berita dan halaman detail berita
+│   │   ├── umkm/            # Direktori katalog dan halaman detail UMKM
+│   │   ├── infografis/      # Grafik statistik APBDes & demografi penduduk
+│   │   └── NotFound.jsx     # Halaman penanganan 404
+│   ├── App.jsx              # Definisi rute React Router
+│   └── main.jsx             # Entry point React
+├── .env.example             # Template variabel lingkungan
+├── tailwind.config.cjs      # Konfigurasi utility Tailwind
+└── vite.config.js           # Konfigurasi build Vite
 ```
 
-## Browser Support
+---
 
-At present, we officially aim to support the last two versions of the following browsers:
+## 🚀 Panduan Instalasi & Menjalankan Aplikasi
 
-<img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/chrome.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/firefox.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/edge.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/safari.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/opera.png" width="64" height="64">
+### 1. Prasyarat Sistem
+- **Node.js**: versi `18.x` atau lebih baru
+- **Package Manager**: `npm` (disarankan), `yarn`, atau `pnpm`
+- Backend Laravel berjalan di URL target (default: `http://localhost:8000`)
 
-## Resources
+### 2. Kloning Branch Frontend
+```bash
+git clone -b frontend https://github.com/username-anda/web-desa-krebet.git
+cd web-desa-krebet
+```
 
-- [Live Preview](https://demos.creative-tim.com/material-tailwind-dashboard-react/#/dashboard/home?ref=readme-mtdr)
-- [Download Page](https://www.creative-tim.com/product/material-tailwind-dashboard-react?ref=readme-mtdr)
-- Documentation is [here](https://material-tailwind.com/?ref=readme-mtdr)
-- [License Agreement](https://www.creative-tim.com/license?ref=readme-mtdr)
-- [Support](https://www.creative-tim.com/contact-us?ref=readme-mtdr)
-- Issues: [Github Issues Page](https://github.com/creativetimofficial/material-tailwind-dashboard-react/issues)
-- [Nepcha Analytics](https://nepcha.com?ref=readme) - Analytics tool for your website
+### 3. Pasang Dependensi
+```bash
+npm install
+```
 
-## Reporting Issues
+### 4. Konfigurasi Variabel Lingkungan (.env)
+Salin berkas template lingkungan:
+```bash
+cp .env.example .env
+```
 
-We use GitHub Issues as the official bug tracker for the Material Tailwind Dashboard React. Here are some advices for our users that want to report an issue:
+Sesuaikan URL endpoint REST API backend:
+```env
+VITE_API_BASE=http://localhost:8000/api
+```
 
-1. Make sure that you are using the latest version of the Material Tailwind Dashboard React. Check the CHANGELOG from your dashboard on our [website](https://www.creative-tim.com/product/material-tailwind-dashboard-react?ref=readme-mtdr).
-2. Providing us reproducible steps for the issue will shorten the time it takes for it to be fixed.
-3. Some issues may be browser specific, so specifying in what browser you encountered the issue might help.
+### 5. Jalankan Development Server
+```bash
+npm run dev
+```
+Buka browser pada alamat: `http://localhost:5173`.
 
-## Technical Support or Questions
+### 6. Build Produksi
+Untuk mengompilasi bundel produksi ke folder `dist/`:
+```bash
+npm run build
+```
 
-If you have questions or need help integrating the product please [contact us](https://www.creative-tim.com/contact-us?ref=readme-mtdr) instead of opening an issue.
+Pratinjau build produksi lokal:
+```bash
+npm run preview
+```
 
-## Licensing
+---
 
-- Copyright 2023 [Creative Tim](https://www.creative-tim.com?ref=readme-mtdr)
-- Creative Tim [license](https://www.creative-tim.com/license?ref=readme-mtdr)
+## 🖼️ Memperbarui Berkas Screenshot
+Untuk mengganti visual placeholder dengan tangkapan layar langsung aplikasi Anda:
+1. Ambil screenshot halaman browser resolusi minimal `1920x1080` (rasio 16:9).
+2. Simpan file ke dalam folder `screenshots/` dengan nama:
+   - `hero-section.jpg` (atau `.png`)
+   - `laman-berita.svg` (atau `.png`)
+   - `admin-panel.svg` (atau `.png`)
+3. Sesuaikan ekstensi file di file `README.md` ini bila menggunakan format lain.
 
-## Useful Links
+---
 
-- [More products](https://www.creative-tim.com/templates?ref=readme-mtdr) from Creative Tim
-
-- [Tutorials](https://www.youtube.com/channel/UCVyTG4sCw-rOvB9oHkzZD1w)
-
-- [Freebies](https://www.creative-tim.com/bootstrap-themes/free?ref=readme-mtdr) from Creative Tim
-
-- [Affiliate Program](https://www.creative-tim.com/affiliates/new?ref=readme-mtdr) (earn money)
-
-##### Social Media
-
-Twitter: <https://twitter.com/CreativeTim>
-
-Facebook: <https://www.facebook.com/CreativeTim>
-
-Dribbble: <https://dribbble.com/creativetim>
-
-Google+: <https://plus.google.com/+CreativetimPage>
-
-Instagram: <https://instagram.com/creativetimofficial>
+## 📄 Lisensi
+Didistribusikan di bawah lisensi **MIT**.
