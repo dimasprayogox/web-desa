@@ -1,66 +1,185 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ⚙️ Web Desa Krebet — Backend API & Admin Panel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-%3E%3D_8.2-777BB4?style=flat&logo=php&logoColor=white)](https://php.net)
+[![Filament](https://img.shields.io/badge/Filament-v3.x-E0A82E?style=flat&logo=livewire&logoColor=white)](https://filamentphp.com)
+[![Storage](https://img.shields.io/badge/Storage-Local_%7C_MinIO_%7C_S3-blue?style=flat)](https://min.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## About Laravel
+Branch repositori khusus **Backend service & Admin Panel** untuk Sistem Informasi Desa Krebet. Dibangun menggunakan **Laravel 12** dan **Filament PHP v3** untuk menyediakan RESTful API ke aplikasi frontend publik serta antarmuka administrasi desa terpusat.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🏛️ Arsitektur & Fitur Utama
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **⚡ Filament v3 CMS & Admin Panel:**
+  - **Berita Desa**: Publikasi artikel, pengumuman, kategori, sampul media, dan status penerbitan.
+  - **Katalog UMKM**: Registrasi profil usaha mikro desa, kategori usaha, kontak, dan galeri produk.
+  - **Demografi Kependudukan**: Pengelolaan data penduduk per dusun, rentang umur, jenis kelamin, dan tahun data.
+  - **Transparansi APBDes**: Pengelolaan laporan realisasi pos Pendapatan, Belanja, dan Pembiayaan desa.
+  - **Validasi Otomatis**: Trait validasi data konsistensi demografi dan pencegahan duplikasi data.
+- **🔌 RESTful Web API:**
+  - Respon standar JSON untuk dikonsumsi langsung oleh client React JS frontend.
+  - Optimasi query, caching data statistik, dan endpoint pencarian real-time.
+  - Endpoint summary metrik kependudukan untuk widget hero section frontend.
+- **🗄️ Media Storage Fleksibel:**
+  - Multi-driver: Local storage, MinIO Object Storage, dan AWS S3 (`MediaStorageService.php`).
+  - Command inisialisasi bucket otomatis: `php artisan storage:setup-minio`.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🛠️ Tech Stack & Dependensi
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+| Komponen | Paket / Teknologi | Fungsi |
+|---|---|---|
+| **Framework** | Laravel 12.x | Backend engine, routing, & Eloquent ORM |
+| **Admin Panel** | Filament PHP v3 | Dashboard CMS backoffice |
+| **Runtime** | PHP >= 8.2 | Server language runtime |
+| **Database** | MySQL / SQLite / MariaDB | Database relasional |
+| **Storage Driver** | League Flysystem S3 & MinIO | Driver manajemen file & media upload |
+| **Auth** | Laravel Breeze & Filament Auth | Sistem otentikasi admin |
+| **Testing & Lint** | PHPUnit 11 & Laravel Pint | Unit testing & code styling |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## 📁 Struktur Direktori (Branch Backend)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```text
+.
+├── app/
+│   ├── Console/Commands/        # Command Artisan (SetupMinioStorage, dll)
+│   ├── Filament/Resources/      # Definisi Resource Admin (Berita, UMKM, APBDes, dll)
+│   ├── Http/Controllers/Api/    # REST API Controllers (Berita, UMKM, Demografi, APBDes)
+│   ├── Models/                  # Eloquent Models & relasi database
+│   ├── Providers/Filament/      # Provider konfigurasi Panel Admin
+│   ├── Services/                # Service layer (MediaStorage, PopulationValidation)
+│   └── Traits/                  # Trait validasi demografi & duplikasi
+├── config/                      # Konfigurasi sistem (database, filesystems, media, auth)
+├── database/
+│   ├── factories/               # Model factories
+│   ├── migrations/              # Skema tabel database
+│   └── seeders/                 # Data seeder awal
+├── desa_krebet.sql              # Database dump siap pakai (opsional)
+├── routes/
+│   ├── api.php                  # Endpoint RESTful API untuk frontend
+│   ├── web.php                  # Rute panel admin Filament
+│   └── auth.php                 # Rute autentikasi
+├── storage/                     # File upload lokal, cache, log
+└── composer.json                # Dependensi PHP Composer
+```
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## 🚀 Panduan Instalasi & Menjalankan Server
 
-## Contributing
+### 1. Prasyarat Sistem
+- **PHP**: `>= 8.2` (ekstensi aktif: `pdo`, `mbstring`, `openssl`, `xml`, `ctype`, `curl`, `gd`/`imagick`)
+- **Composer**: `v2.x`
+- **Database**: MySQL `8.x` / MariaDB `10.x` atau SQLite `3.x`
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 2. Kloning Branch Backend
+```bash
+git clone -b backend https://github.com/username-anda/web-desa-krebet.git
+cd web-desa-krebet
+```
 
-## Code of Conduct
+### 3. Pasang Dependensi
+```bash
+composer install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 4. Konfigurasi Variabel Lingkungan (.env)
+Salin template konfigurasi:
+```bash
+cp .env.example .env
+```
 
-## Security Vulnerabilities
+Generate application key:
+```bash
+php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Sesuaikan konfigurasi database pada `.env`:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=desa_krebet
+DB_USERNAME=root
+DB_PASSWORD=
+```
+*(Atau gunakan `DB_CONNECTION=sqlite` untuk development lokal cepat).*
 
-## License
+Konfigurasi media storage driver:
+```env
+MEDIA_DISK_DRIVER=public
+FILESYSTEM_DISK=public
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 5. Migrasi & Seeding Database
+Jalankan migrasi tabel dan seeding data:
+```bash
+php artisan migrate --seed
+```
+*Atau import database dump yang tersedia:*
+```bash
+mysql -u root -p desa_krebet < desa_krebet.sql
+```
+
+Buat tautan storage publik:
+```bash
+php artisan storage:link
+```
+
+### 6. Buat Akun Administrator (Filament)
+Buat user untuk login ke panel admin:
+```bash
+php artisan make:filament-user
+```
+Masukkan nama, email, dan password sesuai permintaan di terminal.
+
+### 7. Jalankan Server
+```bash
+php artisan serve
+```
+- API Base URL: `http://127.0.0.1:8000/api`
+- URL Admin Panel: `http://127.0.0.1:8000/admin` (atau `/` sesuai konfigurasi panel)
+
+---
+
+## 📡 Ringkasan Endpoint REST API
+
+| Modul | Method | Endpoint | Deskripsi |
+|---|---|---|---|
+| **Berita** | `GET` | `/api/berita` | Daftar berita desa (paginasi & filter) |
+| | `GET` | `/api/berita/slug/{slug}` | Detail berita berdasarkan slug |
+| | `GET` | `/api/berita/terbaru/{limit?}` | Berita terbaru untuk widget frontend |
+| | `GET` | `/api/berita/search?q={query}` | Pencarian berita real-time |
+| **UMKM** | `GET` | `/api/umkm` | Katalog UMKM terdaftar |
+| | `GET` | `/api/umkm/slug/{slug}` | Detail satu profil UMKM |
+| | `GET` | `/api/umkm/featured` | Daftar UMKM unggulan desa |
+| | `GET` | `/api/umkm/statistics/summary` | Rekapitulasi jumlah UMKM |
+| **Demografi** | `GET` | `/api/demografi-detail/statistics/summary` | Ringkasan metrik statistik penduduk |
+| | `GET` | `/api/demografi-detail/piramida` | Dataset piramida umur kependudukan |
+| | `GET` | `/api/demografi-detail/by-dusun/{id}` | Data kependudukan per dusun |
+| **APBDes** | `GET` | `/api/laporan-apbdes` | Laporan transparansi anggaran APBDes |
+| | `GET` | `/api/detail-apbdes/by-laporan/{id}` | Detail rincian pendapatan & belanja |
+| **Master** | `GET` | `/api/tahun-data` | Master referensi tahun data aktif |
+
+---
+
+## 🧪 Testing & Standardisasi Kode
+Jalankan pengujian unit:
+```bash
+php artisan test
+```
+
+Format dan periksa gaya kode:
+```bash
+./vendor/bin/pint
+```
+
+---
+
+## 📄 Lisensi
+Didistribusikan di bawah lisensi **MIT**.
